@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Writing Pad</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string-array name="spinner"><item>Spinner 1</item>
+        <item>Spinner 2</item></string-array>
+</resources>
