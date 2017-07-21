@@ -38,7 +38,11 @@ public class DrawingVieww extends View
 		super(context, attrs);
 		init();
 	}
+	public DrawingVieww(Context context){
+		super(context);
 
+
+	}
 	private void init()
 	{
 		mDrawPath = new Path();
@@ -84,48 +88,9 @@ public class DrawingVieww extends View
 		}
 		canvas.drawPath(mDrawPath, mDrawPaint);
 	}
-	private void touch_start(float x, float y) {
-
-		if (isEraserActive) {
-			mDrawPaint.setColor(Color.WHITE);
-			mDrawPaint.setStrokeWidth(20);
-			Paint newPaint = new Paint(mDrawPaint); // Clones the mPaint object
-			paths.add(new Pair<Path, Paint>(mDrawPath, newPaint));
-
-		} else {
-			mDrawPaint.setColor(Color.BLACK);
-			mDrawPaint.setStrokeWidth(10);
-			Paint newPaint = new Paint(mDrawPaint); // Clones the mPaint object
-			paths.add(new Pair<Path, Paint>(mDrawPath, newPaint));
-
-		}
-
-
-		mDrawPaint.reset();
-		mDrawPath.moveTo(x, y);
-		mX = x;
-		mY = y;
-	}
-	private void touch_move(float x, float y) {
-		float dx = Math.abs(x - mX);
-		float dy = Math.abs(y - mY);
-		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-			mDrawPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-			mX = x;
-			mY = y;
-		}
-	}
-
-	private void touch_up() {
-		mDrawPath.lineTo(mX, mY);
-
-		// commit the path to our offscreen
-		mDrawCanvas.drawPath(mDrawPath, mDrawPaint);
-
-		// kill this so we don't double draw
-		mDrawPath = new Path();
-		Paint newPaint = new Paint(mDrawPaint); // Clones the mPaint object
-		paths.add(new Pair<Path, Paint>(mDrawPath, newPaint));
+	protected void onDRAW(Canvas canvas){
+		canvas.drawBitmap(mCanvasBitmap,0,0,mDrawPaint);
+		canvas.drawPath(mDrawPath, mDrawPaint);
 	}
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh)
@@ -136,7 +101,10 @@ public class DrawingVieww extends View
 
 		mDrawCanvas = new Canvas(mCanvasBitmap);
 	}
-
+	public void setImage(Bitmap image){
+		mCanvasBitmap = image.copy(Bitmap.Config.ARGB_8888, true);
+		mDrawCanvas = new Canvas(mCanvasBitmap);
+	}
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
@@ -156,11 +124,12 @@ public class DrawingVieww extends View
 					mDrawPath.moveTo(touchX, touchY);
 
 				}
-
+				invalidate();
 				//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
 				break;
 			case MotionEvent.ACTION_MOVE:
 				mDrawPath.lineTo(touchX, touchY);
+				invalidate();
 				break;
 			case MotionEvent.ACTION_UP:
 				mDrawPath.lineTo(touchX, touchY);
@@ -168,11 +137,11 @@ public class DrawingVieww extends View
 				mPaints.add(mDrawPaint);
 				mDrawPath = new Path();
 				initPaint();
+				invalidate();
 				break;
 			default:
 				return false;
 		}
-
 		invalidate();
 		return true;
 	}

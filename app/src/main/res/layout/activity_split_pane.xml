@@ -16,7 +16,11 @@
         <Spinner
             android:id="@+id/spinner_nav"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:background="@drawable/spinner_custom"
+            style="@style/mySpinnerStyle"
+            android:prompt="@string/spinner_title"
+            android:spinnerMode="dialog"/>
     </android.support.v7.widget.Toolbar>
     <!-- each frame layout will have weight set programatically,
         however we want to ensure that they have some size on first pass, so set width to 10dp -->

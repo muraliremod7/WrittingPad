@@ -91,7 +91,7 @@
                 <ImageView
                     android:id="@+id/choi1_image"
                     android:visibility="gone"
-                    android:layout_width="match_parent"
+                    android:layout_width="50dp"
                     android:layout_height="60dp" />
 
                 <TextView
@@ -105,7 +105,7 @@
 
                 <ImageView
                     android:id="@+id/choi2_image"
-                    android:layout_width="match_parent"
+                    android:layout_width="50dp"
                     android:visibility="gone"
                     android:layout_height="60dp" />
                 <TextView
@@ -118,7 +118,7 @@
                     android:textStyle="bold" />
                 <ImageView
                     android:id="@+id/choi3_image"
-                    android:layout_width="match_parent"
+                    android:layout_width="50dp"
                     android:visibility="gone"
                     android:layout_height="60dp" />
                 <TextView
@@ -131,7 +131,7 @@
                     android:textStyle="bold" />
                 <ImageView
                     android:id="@+id/choi4_image"
-                    android:layout_width="match_parent"
+                    android:layout_width="50dp"
                     android:visibility="gone"
                     android:layout_height="60dp" />
                 <TextView
@@ -144,7 +144,7 @@
                     android:textStyle="bold" />
                 <ImageView
                     android:id="@+id/choi5_image"
-                    android:layout_width="match_parent"
+                    android:layout_width="50dp"
                     android:visibility="gone"
                     android:layout_height="60dp" />
             </LinearLayout>

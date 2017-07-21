@@ -58,11 +58,12 @@ public class SplitPaneActivity extends AppCompatActivity  {
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.drawable.sreedhar_logo);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         fragmentManager = getSupportFragmentManager();
         fragment = fragmentManager.findFragmentById(R.id.activity_split_pane_left_pane);
 
         if (fragment == null) {
-            fragment = ExplanationTouchPad.newInstance();
+            ExplanationTouchPad fragment = ExplanationTouchPad.newInstance();
             if (fragment != null) {
                 fragmentManager.beginTransaction()
                         .add(R.id.activity_split_pane_left_pane, fragment)
@@ -144,7 +145,7 @@ public class SplitPaneActivity extends AppCompatActivity  {
         fragment = fragmentManager.findFragmentById(R.id.activity_split_pane_left_pane);
         android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if (fragment == null) {
-            fragment = QuestionViewFragment.newInstance();
+            QuestionViewFragment fragment = new QuestionViewFragment().newInstance();
             if (fragment != null) {
                 fragmentTransaction
                         .add(R.id.activity_split_pane_right_pane, fragment)

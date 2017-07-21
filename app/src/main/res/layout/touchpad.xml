@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <com.indianservers.writingpad.component.DrawingVieww
         android:id="@+id/main_drawing_view"
         android:layout_width="match_parent"

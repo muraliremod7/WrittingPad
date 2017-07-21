@@ -18,4 +18,8 @@
         <item name="android:background">@color/textColorPrimary</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="mySpinnerStyle" parent="android:Widget.ListView.DropDown">
+        <item name="android:divider">#cccc</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
 </resources>

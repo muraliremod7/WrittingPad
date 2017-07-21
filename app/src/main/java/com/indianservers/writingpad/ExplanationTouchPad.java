@@ -1,10 +1,15 @@
 package com.indianservers.writingpad;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -12,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -24,9 +30,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.indianservers.writingpad.adapters.SpinnerAdapter;
 import com.indianservers.writingpad.component.DrawingVieww;
 import com.indianservers.writingpad.services.AlertDialogManager;
 import com.indianservers.writingpad.services.ConnectionDetector;
@@ -45,8 +54,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -66,10 +77,12 @@ public class ExplanationTouchPad extends Fragment{
     private ProgressBar progressBar;
     private int STORAGE_PERMISSION_CODE = 23;
     private String Id;
+    QuestionViewFragment questionViewFragment;
     private AlertDialogManager dialogManager;
+    SharedPreferences teamID;
     File sdcard  = Environment.getExternalStorageDirectory();
-    public static Fragment newInstance() {
-        Fragment fragment = new ExplanationTouchPad();
+    public static ExplanationTouchPad newInstance() {
+        ExplanationTouchPad fragment = new ExplanationTouchPad();
         return fragment;
     }
     @Override
@@ -85,9 +98,24 @@ public class ExplanationTouchPad extends Fragment{
         mDrawingView = (DrawingVieww) itemView.findViewById(R.id.main_drawing_view);
          progressBar = new ProgressBar(getContext());
         ButterKnife.bind(getActivity());
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         dialogManager = new AlertDialogManager();
-        initDrawingView();
+        questionViewFragment = new QuestionViewFragment();
+        teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String value = teamID.getString("pathname","1");
+        SharedPreferences.Editor editor = teamID.edit();
+        editor.remove("pathname");
+        editor.apply();
+        Bitmap bmp = BitmapFactory.decodeFile(value);
+        BitmapDrawable drawable = new BitmapDrawable(getResources(), bmp);
+        if(drawable!=null){
+            mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
+            mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
+            mDrawingView.setBackground(drawable);
+
+        }
+        else if(drawable==null){
+            initDrawingView();
+        }
         return itemView;
     }
     //We are calling this method to check the permission status
@@ -137,7 +165,6 @@ public class ExplanationTouchPad extends Fragment{
         mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.white);
         mCurrentColor = ContextCompat.getColor(getContext(), android.R.color.black);
         mCurrentStroke = 10;
-
         mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
         mDrawingView.setPaintColor(mCurrentColor);
         mDrawingView.setPaintStrokeWidth(mCurrentStroke);
@@ -225,7 +252,6 @@ public class ExplanationTouchPad extends Fragment{
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
 
-
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -309,7 +335,7 @@ public class ExplanationTouchPad extends Fragment{
         pDialog.setCancelable(false);
         pDialog.show();
         timerDelayRemoveDialog(5*1000,pDialog);
-        SharedPreferences teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
+        teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
         Id = teamID.getString("input","0");
         Ion.with(getContext())
                 .load("http://sreedharscce.com/android/"+query+"/"+query+".zip")
@@ -329,7 +355,7 @@ public class ExplanationTouchPad extends Fragment{
                         if(pDialog.isShowing()){
                             pDialog.dismiss();
                         }
-                        String zipFilePath = Environment.getExternalStorageDirectory()
+                        String zipFilePath = sdcard
                                 .getAbsolutePath()+"/";
                         unpackZip(zipFilePath, Id+".zip");
                         callfragment();
@@ -347,8 +373,7 @@ public class ExplanationTouchPad extends Fragment{
             ZipEntry mZipEntry;
             byte[] buffer = new byte[1024];
             int count;
-            File fileDirectory = new File(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()+"/SreedharCCE/"+Id);
+            File fileDirectory = new File(sdcard.getAbsolutePath()+"/SreedharCCE/"+Id);
             // have the object build the directory structure, if needed.
             if(fileDirectory.equals(null)){
                 fileDirectory.delete();
@@ -388,21 +413,14 @@ public class ExplanationTouchPad extends Fragment{
     public File saveImage() {
         mDrawingView.setDrawingCacheEnabled(true);
         Bitmap bm = mDrawingView.getDrawingCache();
-        SharedPreferences teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
         String Id = teamID.getString("input","0");
-        File fileDirectory = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath()+"/SreedharCCE/"+Id+"/"+QuestionViewFragment.CurrentQuestionId);
+        int currentquestionid = QuestionViewFragment.CurrentQuestionId+1;
+        File fileDirectory = new File(sdcard.getAbsolutePath()+"/SreedharCCE/"+Id+"/"+currentquestionid);
         // have the object build the directory structure, if needed.
         fileDirectory.mkdirs();
         File f = null;
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1:00"));
-        Date currentLocalTime = cal.getTime();
-        DateFormat date = new SimpleDateFormat("HH:mm a");
-        // you can get seconds by adding  "...:ss" to it
-        date.setTimeZone(TimeZone.getTimeZone("GMT+1:00"));
-
-        String localTime = date.format(currentLocalTime);
-        f = new File(fileDirectory, QuestionViewFragment.CurrentQuestionId+"::"+localTime+ ".png");
+        String timeStamp = new SimpleDateFormat("yyyy:MM:dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        f = new File(fileDirectory, currentquestionid+"::"+timeStamp+ ".png");
 
         try {
             FileOutputStream strm = new FileOutputStream(f);
@@ -416,29 +434,13 @@ public class ExplanationTouchPad extends Fragment{
 
         return f;
     }
-    public void getFileNames(int position){
-        File sdCardRoot = Environment.getExternalStorageDirectory();
-        File yourDir = new File(sdCardRoot, "/SreedharCCE/"+Id+"/"+position+"/");
-        if(yourDir.isDirectory()){
-            if (yourDir == null||yourDir.equals(null)) {
-
-            }else{
-                for (File f : yourDir.listFiles()) {
-                    if (f.isFile()) {
-                        String name = f.getName();
-                    }else {
-
-                    }
-                }
-            }
-        }
-
-    }
     public void callfragment(){
         QuestionViewFragment fragment2 = new QuestionViewFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.activity_split_pane_right_pane, fragment2);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
 }

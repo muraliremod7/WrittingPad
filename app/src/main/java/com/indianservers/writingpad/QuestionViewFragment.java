@@ -1,31 +1,41 @@
 package com.indianservers.writingpad;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.gesture.GestureOverlayView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.indianservers.writingpad.adapters.ListviewArrayAdapter;
+import com.indianservers.writingpad.adapters.SpinnerAdapter;
+import com.indianservers.writingpad.component.DrawingVieww;
 import com.indianservers.writingpad.services.AlertDialogManager;
 import com.indianservers.writingpad.services.ConnectionDetector;
 import com.koushikdutta.async.future.FutureCallback;
@@ -73,10 +83,18 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     String myString;
     WebView webView;
     int start,end;
+    Context context;
     ExplanationTouchPad touchPad;
+    SharedPreferences teamID;
+    private ArrayList<String> imagesList = new ArrayList<>();
+    ArrayAdapter<String> arrayAdapter;
+    private SpinnerAdapter spinAdapter;
+    public Spinner spinner;
+    File sdcard  = Environment.getExternalStorageDirectory();
     final Handler handler = new Handler();
-    public static Fragment newInstance() {
-        Fragment fragment = new QuestionViewFragment();
+    private SharedPreferences.Editor editor;
+    public static QuestionViewFragment newInstance() {
+        QuestionViewFragment fragment = new QuestionViewFragment();
         return fragment;
     }
 
@@ -117,7 +135,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         left.setOnClickListener(this);
         right.setOnClickListener(this);
         dialogManager = new AlertDialogManager();
-            SharedPreferences teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
+        teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
             Id = teamID.getString("input","0");
                 JsonURL = file+"/"+Id+"/"+Id+".json";
                 gettingQuestionfromOffline(JsonURL);
@@ -180,8 +198,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                         CurrentQuestionId = position;
                                         int Position = position+1;
-                                        touchPad = new ExplanationTouchPad();
-                                        touchPad.getFileNames(Position);
+                                        getFileNames(Position,Id);
                                         loadQuestion(position,view);
                                     }
                                 });
@@ -190,8 +207,65 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                             }
                         }
                     }
+
+
                 });
     }
+    public void getFileNames(int position, String id){
+        //String Idd = teamID.getString("input","0");
+        imagesList.clear();
+        File yourDir = new File(sdcard, "/SreedharCCE/"+id+"/"+position+"/");
+        spinner = (Spinner)getActivity().findViewById(R.id.spinner_nav);
+        if(yourDir.isDirectory()){
+            if (yourDir == null||yourDir.equals(null)) {
+                spinner.setVisibility(GONE);
+            }else{
+                for (File f : yourDir.listFiles()) {
+                    if (f.isFile()) {
+                        String name = f.getName();
+                        imagesList.add(name);
+                    }else {
+
+                    }
+                }
+                spinAdapter = new SpinnerAdapter(getActivity().getApplicationContext(),imagesList);
+                spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinAdapter.notifyDataSetChanged();
+                spinner.setVisibility(View.VISIBLE);
+                spinner.setAdapter(spinAdapter);
+                spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                        String currentImage = parent.getItemAtPosition(position).toString();
+                        int pos = CurrentQuestionId + 1;
+                        String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + currentImage).getAbsolutePath();
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+                        editor = settings.edit();
+                        editor.putString("pathname", pathName);
+                        editor.commit();
+                        callfragment();
+                    }
+                    @Override
+                    public void onNothingSelected(android.widget.AdapterView<?> parent) {
+
+                    }
+                });
+            }
+
+        }else{
+            spinner.setVisibility(GONE);
+        }
+    }
+
+    public void callfragment(){
+        ExplanationTouchPad fragment2 = new ExplanationTouchPad();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.activity_split_pane_left_pane, fragment2);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -338,7 +412,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             }else {
                 opt5.setVisibility(View.VISIBLE);
                 ch5Image.setVisibility(GONE);
-                opt5.setText("\n"+"5)  "+ Html.fromHtml(quetionClass.getChoice5()));
+                opt5.setText("\n"+"5)   "+ Html.fromHtml(quetionClass.getChoice5()));
             }
         }
     }
@@ -350,4 +424,5 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     public void loadPreviousQuestion(int i,View v) {
         loadQuestion(i,v);
     }
+
 }

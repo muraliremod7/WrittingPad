@@ -42,10 +42,4 @@
         android:id="@+id/save"
         android:icon="@drawable/save"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/spinner"
-        android:title="ActionBar Spinner"
-        app:actionViewClass="android.widget.Spinner"
-        android:background="#ffff"
-        app:showAsAction="always" />
 </menu>
