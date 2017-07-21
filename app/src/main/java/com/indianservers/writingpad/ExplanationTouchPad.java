@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +32,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -65,7 +68,7 @@ import java.util.zip.ZipInputStream;
 import android.os.Handler;
 import butterknife.ButterKnife;
 
-public class ExplanationTouchPad extends Fragment{
+public class ExplanationTouchPad extends Fragment implements View.OnClickListener{
 
     DrawingVieww mDrawingView;
     private ProgressDialog pDialog;
@@ -92,7 +95,7 @@ public class ExplanationTouchPad extends Fragment{
     }
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
 
         View itemView = inflater.inflate(R.layout.touchpad, container, false);
         mDrawingView = (DrawingVieww) itemView.findViewById(R.id.main_drawing_view);
@@ -102,7 +105,7 @@ public class ExplanationTouchPad extends Fragment{
         questionViewFragment = new QuestionViewFragment();
         teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
         String value = teamID.getString("pathname","1");
-        SharedPreferences.Editor editor = teamID.edit();
+         SharedPreferences.Editor editor = teamID.edit();
         editor.remove("pathname");
         editor.apply();
         Bitmap bmp = BitmapFactory.decodeFile(value);
@@ -443,4 +446,18 @@ public class ExplanationTouchPad extends Fragment{
         fragmentTransaction.commit();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.left:
+                    saveImage();
+                break;
+            case R.id.right:
+                    saveImage();
+                break;
+
+        }
+
+    }
 }

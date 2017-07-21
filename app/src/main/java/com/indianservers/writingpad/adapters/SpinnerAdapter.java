@@ -2,15 +2,19 @@ package com.indianservers.writingpad.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.indianservers.writingpad.R;
+import com.indianservers.writingpad.model.SpinnerModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +25,11 @@ import java.util.List;
 
 public class SpinnerAdapter extends ArrayAdapter<String> {
     private Context context1;
-    private ArrayList<String> data;
+    private ArrayList data;
     public Resources res;
     private LayoutInflater inflater;
-    public SpinnerAdapter( Context context, ArrayList<String> objects) {
+    SpinnerModel tempValues=null;
+    public SpinnerAdapter( Context context, ArrayList objects) {
         super(context,  R.layout.spinner, objects);
         this.context1 = context;
         this.data = objects;
@@ -43,10 +48,13 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     public View getCustomView(int position, View convertView, ViewGroup parent) {
 
         View row = inflater.inflate(R.layout.spinner, parent, false);
-
+        tempValues = null;
+        tempValues = (SpinnerModel) data.get(position);
         TextView tvCategory = (TextView) row.findViewById(R.id.sptext);
-
-        tvCategory.setText(data.get(position).toString());
+        ImageView imageView = (ImageView)row.findViewById(R.id.imagespinner);
+        Bitmap bmp = BitmapFactory.decodeFile(tempValues.getImage());
+        imageView.setImageBitmap(bmp);
+        tvCategory.setText(tempValues.getImageName());
 
         return row;
     }

@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="48dp"
-    android:layout_margin="10dp"
-    android:id="@+id/sptext"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:textColor="@color/colorPrimary"
-    android:textColorHighlight="@color/textColorPrimary"
-    android:textSize="20sp"
-    android:gravity="center_vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content">
+    <ImageView
+        android:id="@+id/imagespinner"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_margin="10dp"
+        android:focusable="false"
+        android:clickable="false"/>
+    <TextView
+        android:layout_toRightOf="@+id/imagespinner"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_margin="10dp"
+        android:id="@+id/sptext"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textColor="@color/colorPrimary"
+        android:textColorHighlight="@color/textColorPrimary"
+        android:textSize="20sp"
+        android:gravity="center_vertical"
+        android:focusable="false"
+     />
+</RelativeLayout>

@@ -36,6 +36,7 @@ import com.android.volley.RequestQueue;
 import com.indianservers.writingpad.adapters.ListviewArrayAdapter;
 import com.indianservers.writingpad.adapters.SpinnerAdapter;
 import com.indianservers.writingpad.component.DrawingVieww;
+import com.indianservers.writingpad.model.SpinnerModel;
 import com.indianservers.writingpad.services.AlertDialogManager;
 import com.indianservers.writingpad.services.ConnectionDetector;
 import com.koushikdutta.async.future.FutureCallback;
@@ -86,7 +87,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     Context context;
     ExplanationTouchPad touchPad;
     SharedPreferences teamID;
-    private ArrayList<String> imagesList = new ArrayList<>();
+    private ArrayList<SpinnerModel> imagesList = new ArrayList<SpinnerModel>();
     ArrayAdapter<String> arrayAdapter;
     private SpinnerAdapter spinAdapter;
     public Spinner spinner;
@@ -121,12 +122,12 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         opt5.setTypeface(tfArial);
         webView = (WebView)itemView.findViewById(R.id.web);
         directionImage = (ImageView)itemView.findViewById(R.id.image_direction);
-        questionImage = (ImageView)itemView.findViewById(R.id.image_question);
-        ch1Image = (ImageView)itemView.findViewById(R.id.choi1_image);
-        ch2Image = (ImageView)itemView.findViewById(R.id.choi2_image);
-        ch3Image = (ImageView)itemView.findViewById(R.id.choi3_image);
-        ch4Image = (ImageView)itemView.findViewById(R.id.choi4_image);
-        ch5Image = (ImageView)itemView.findViewById(R.id.choi5_image);
+        questionImage =     (ImageView)itemView.findViewById(R.id.image_question);
+                ch1Image = (ImageView)itemView.findViewById(R.id.choi1_image);
+                ch2Image = (ImageView)itemView.findViewById(R.id.choi2_image);
+                ch3Image = (ImageView)itemView.findViewById(R.id.choi3_image);
+                ch4Image = (ImageView)itemView.findViewById(R.id.choi4_image);
+                ch5Image = (ImageView)itemView.findViewById(R.id.choi5_image);
         itemNumber = (TextView)getActivity().findViewById(R.id.questionNumber);
         cd = new ConnectionDetector(getActivity());
         questionsClassObj = new QuestionsClass();
@@ -221,9 +222,12 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 spinner.setVisibility(GONE);
             }else{
                 for (File f : yourDir.listFiles()) {
+                    SpinnerModel spinnerModel = new SpinnerModel();
                     if (f.isFile()) {
                         String name = f.getName();
-                        imagesList.add(name);
+                        spinnerModel.setImageName(f.getName());
+                        spinnerModel.setImage(yourDir.getAbsolutePath()+"/"+name);
+                        imagesList.add(spinnerModel);
                     }else {
 
                     }
@@ -236,7 +240,9 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                        String currentImage = parent.getItemAtPosition(position).toString();
+                        spinAdapter.notifyDataSetChanged();
+//                        String currentImage = parent.getItemAtPosition(position).toString();
+                        String currentImage = ((TextView) view.findViewById(R.id.sptext)).getText().toString();
                         int pos = CurrentQuestionId + 1;
                         String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + currentImage).getAbsolutePath();
                         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -301,6 +307,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         LinearLayout.LayoutParams questionparam = new LinearLayout.LayoutParams(200, 200);
 
         if (i >= 0 || i <= mQuestionsCopy.size()) {
+
             QuestionsClass quetionClass = mQuestionsCopy.get(i);
             Log.v("sai", "current question number-----" + CurrentQuestionId);
             Log.v("sai", "Total Questions-----" + mQuestionsCopy.size());
@@ -364,7 +371,13 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             }else {
                 opt1.setVisibility(View.VISIBLE);
                 ch1Image.setVisibility(GONE);
-                opt1.setText("\n"+"1)  " + Html.fromHtml(quetionClass.getChoice1()));
+                if(quetionClass.getmAnswer()==1){
+                    opt1.setText("\n"+"1)  " + Html.fromHtml(quetionClass.getChoice1()));
+                    opt1.setTextColor(Color.GREEN);
+                }else{
+                    opt1.setTextColor(Color.BLACK);
+                    opt1.setText("\n"+"1)  " + Html.fromHtml(quetionClass.getChoice1()));
+                }
             }
             if(quetionClass.getChoice2().endsWith(".jpg")){
                 String mCurrentPhotoPath = file.getAbsolutePath()+"/"+Id+"/"+quetionClass.getChoice2();
@@ -376,7 +389,13 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             }else {
                 opt2.setVisibility(View.VISIBLE);
                 ch2Image.setVisibility(GONE);
-                opt2.setText("\n"+"2)  "+ Html.fromHtml(quetionClass.getChoice2()));
+                if(quetionClass.getmAnswer()==2){
+                    opt2.setText("\n"+"2)  "+ Html.fromHtml(quetionClass.getChoice2()));
+                    opt2.setTextColor(Color.GREEN);
+                }else{
+                    opt2.setTextColor(Color.BLACK);
+                    opt2.setText("\n"+"2)  "+ Html.fromHtml(quetionClass.getChoice2()));
+                }
             }
             if(quetionClass.getChoice3().endsWith(".jpg")){
                 String mCurrentPhotoPath = file.getAbsolutePath()+"/"+Id+"/"+quetionClass.getChoice3();
@@ -388,7 +407,14 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             }else {
                 opt3.setVisibility(View.VISIBLE);
                 ch3Image.setVisibility(GONE);
-                opt3.setText("\n"+"3)  "+ Html.fromHtml(quetionClass.getChoice3()));
+
+                if(quetionClass.getmAnswer()==3){
+                    opt3.setText("\n"+"3)  "+ Html.fromHtml(quetionClass.getChoice3()));
+                    opt3.setTextColor(Color.GREEN);
+                }else{
+                    opt3.setTextColor(Color.BLACK);
+                    opt3.setText("\n"+"3)  "+ Html.fromHtml(quetionClass.getChoice3()));
+                }
             }
             if(quetionClass.getChoice4().endsWith(".jpg")){
                 String mCurrentPhotoPath = file.getAbsolutePath()+"/"+Id+"/"+quetionClass.getChoice4();
@@ -400,7 +426,13 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             }else {
                 opt4.setVisibility(View.VISIBLE);
                 ch4Image.setVisibility(GONE);
-                opt4.setText("\n"+"4)   "+ Html.fromHtml(quetionClass.getChoice4()));
+                if(quetionClass.getmAnswer()==4){
+                    opt4.setText("\n"+"4)   "+ Html.fromHtml(quetionClass.getChoice4()));
+                    opt4.setTextColor(Color.GREEN);
+                }else{
+                    opt4.setTextColor(Color.BLACK);
+                    opt4.setText("\n"+"4)   "+ Html.fromHtml(quetionClass.getChoice4()));
+                }
             }
             if(quetionClass.getChoice5().endsWith(".jpg")){
                 String mCurrentPhotoPath = file.getAbsolutePath()+"/"+Id+"/"+quetionClass.getChoice5();
@@ -412,7 +444,13 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             }else {
                 opt5.setVisibility(View.VISIBLE);
                 ch5Image.setVisibility(GONE);
-                opt5.setText("\n"+"5)   "+ Html.fromHtml(quetionClass.getChoice5()));
+                if(quetionClass.getmAnswer()==5){
+                    opt5.setText("\n"+"5)   "+ Html.fromHtml(quetionClass.getChoice5()));
+                    opt5.setTextColor(Color.GREEN);
+                }else{
+                    opt5.setTextColor(Color.BLACK);
+                    opt5.setText("\n"+"5)   "+ Html.fromHtml(quetionClass.getChoice5()));
+                }
             }
         }
     }
