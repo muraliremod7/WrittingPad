@@ -269,9 +269,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                         }
                     });
                 }
-
             }
-
         }else{
             spinner_no.setVisibility(View.VISIBLE);
             spinner.setVisibility(GONE);
@@ -343,7 +341,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         dialog.show(getActivity().getSupportFragmentManager(), "StrokeSelectorDialog");
     }
     public void loadQuestion(int i,View v) {
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1000, 1000);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1500, 1500);
         LinearLayout.LayoutParams questionparam = new LinearLayout.LayoutParams(200, 200);
 
         if (i >= 0 || i <= mQuestionsCopy.size()) {

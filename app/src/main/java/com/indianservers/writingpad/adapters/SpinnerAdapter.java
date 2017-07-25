@@ -49,7 +49,6 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     }
     // This funtion called for each row ( Called data.size() times )
     public View getCustomView(final int position, View convertView, ViewGroup parent) {
-
         View row = inflater.inflate(R.layout.spinner, parent, false);
         tempValues = null;
         tempValues = (SpinnerModel) data.get(position);

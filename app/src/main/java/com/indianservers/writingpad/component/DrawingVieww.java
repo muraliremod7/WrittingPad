@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -108,7 +109,11 @@ public class DrawingVieww extends View
 			case MotionEvent.ACTION_DOWN:
 				if (isEraserActive) {
 					mDrawPaint.setStrokeWidth(20);
-					mDrawPaint.setColor(mBackgroundColor);
+					if(mBackgroundColor== ContextCompat.getColor(getContext(), android.R.color.transparent)){
+						mDrawPaint.setColor(ContextCompat.getColor(getContext(), android.R.color.white));
+					}else{
+						mDrawPaint.setColor(mBackgroundColor);
+					}
 					mDrawPaint.setStrokeWidth(mStrokeWidth+mStrokeWidth+mStrokeWidth);
 					mDrawPath.moveTo(touchX, touchY);
 				} else {
