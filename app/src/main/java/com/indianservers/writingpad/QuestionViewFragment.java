@@ -1,6 +1,7 @@
 package com.indianservers.writingpad;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.gesture.GestureOverlayView;
 import android.graphics.Bitmap;
@@ -18,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +30,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +61,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     private String Id;
     File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+"/SreedharCCE/");
     String JsonURL;
+    private int mCurrentStroke;
     // This string will hold the results
     String data = "";
     private static String questionDirection,questionn,choice1,choice2,choice3,choice4,choice5;
@@ -65,7 +69,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     // Defining the Volley request queue that handles the URL request concurrently
     RequestQueue requestQueue;
     private AlertDialogManager dialogManager;
-    ImageButton clear;
+    ImageButton clear,textStroke;
     GestureOverlayView gestures;
     TextView questionNumber,itemNumber, direction, question, opt1, opt2, opt3, opt4, opt5;
     ImageView ch1Image,ch2Image,ch3Image,ch4Image,ch5Image,questionImage,directionImage;
@@ -84,13 +88,11 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     String myString;
     WebView webView;
     int start,end;
-    Context context;
-    ExplanationTouchPad touchPad;
     SharedPreferences teamID;
     private ArrayList<SpinnerModel> imagesList = new ArrayList<SpinnerModel>();
     ArrayAdapter<String> arrayAdapter;
     private SpinnerAdapter spinAdapter;
-    public Spinner spinner;
+    public Spinner spinner,spinner_no;
     File sdcard  = Environment.getExternalStorageDirectory();
     final Handler handler = new Handler();
     private SharedPreferences.Editor editor;
@@ -104,6 +106,8 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View itemView = inflater.inflate(R.layout.question_touchpad, container, false);
         clear = (ImageButton) itemView.findViewById(R.id.clear);
+        textStroke = (ImageButton)itemView.findViewById(R.id.textsize);
+        textStroke.setOnClickListener(this);
         Typeface tfArial = Typeface.createFromAsset(getContext().getAssets(),"arial.ttf");
         questionNumber = (TextView) itemView.findViewById(R.id.question_number);
         direction = (TextView) itemView.findViewById(R.id.question_direction);
@@ -150,7 +154,6 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 gestures.clear(true);
             }
         });
-         adapter = new ListviewArrayAdapter(getActivity(), mQuestionSet);
 
         Runnable refresh = new Runnable() {
             @Override
@@ -192,6 +195,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                                         mQuestionsCopy = mQuestionSet;
                                 }
                                 // RecycleViewAdapter adapter1 = new RecycleViewAdapter(getActivity(),result);
+                                adapter = new ListviewArrayAdapter(getActivity(), mQuestionSet);
                                 listView = (it.sephiroth.android.library.widget.HListView) getActivity().findViewById(R.id.qno);
                                 listView.setAdapter(adapter);
                                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -217,8 +221,10 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         imagesList.clear();
         File yourDir = new File(sdcard, "/SreedharCCE/"+id+"/"+position+"/");
         spinner = (Spinner)getActivity().findViewById(R.id.spinner_nav);
+        spinner_no = (Spinner)getActivity().findViewById(R.id.spinner_noimage);
         if(yourDir.isDirectory()){
             if (yourDir == null||yourDir.equals(null)) {
+                spinner_no.setVisibility(View.VISIBLE);
                 spinner.setVisibility(GONE);
             }else{
                 for (File f : yourDir.listFiles()) {
@@ -232,36 +238,46 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
 
                     }
                 }
-                spinAdapter = new SpinnerAdapter(getActivity().getApplicationContext(),imagesList);
-                spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinAdapter.notifyDataSetChanged();
-                spinner.setVisibility(View.VISIBLE);
-                spinner.setAdapter(spinAdapter);
-                spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                        spinAdapter.notifyDataSetChanged();
+                if(imagesList.size()==0){
+                    spinner_no.setVisibility(View.VISIBLE);
+                    spinner.setVisibility(GONE);
+                }else{
+                    spinAdapter = new SpinnerAdapter(getActivity().getApplicationContext(),imagesList);
+                    spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinAdapter.notifyDataSetChanged();
+                    spinner_no.setVisibility(GONE);
+                    spinner.setVisibility(View.VISIBLE);
+                    spinner.setAdapter(spinAdapter);
+                    spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
 //                        String currentImage = parent.getItemAtPosition(position).toString();
-                        String currentImage = ((TextView) view.findViewById(R.id.sptext)).getText().toString();
-                        int pos = CurrentQuestionId + 1;
-                        String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + currentImage).getAbsolutePath();
-                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
-                        editor = settings.edit();
-                        editor.putString("pathname", pathName);
-                        editor.commit();
-                        callfragment();
-                    }
-                    @Override
-                    public void onNothingSelected(android.widget.AdapterView<?> parent) {
+                            spinAdapter.notifyDataSetChanged();
+                            String currentImage = ((TextView) view.findViewById(R.id.sptext)).getText().toString();
+                            Toast.makeText(getContext(),currentImage,Toast.LENGTH_LONG).show();
+                            int pos = CurrentQuestionId + 1;
+                            String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + currentImage).getAbsolutePath();
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+                            editor = settings.edit();
+                            editor.putString("pathname", pathName);
+                            editor.commit();
+                            callfragment();
+                        }
+                        @Override
+                        public void onNothingSelected(android.widget.AdapterView<?> parent) {
 
-                    }
-                });
+                        }
+                    });
+                }
+
             }
 
         }else{
+            spinner_no.setVisibility(View.VISIBLE);
             spinner.setVisibility(GONE);
         }
     }
+
 
     public void callfragment(){
         ExplanationTouchPad fragment2 = new ExplanationTouchPad();
@@ -278,11 +294,11 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
 
             case R.id.left:
                 if (CurrentQuestionId > 0) {
-                    loadPreviousQuestion(CurrentQuestionId - 1,v);
+                    loadPreviousQuestion(CurrentQuestionId - 1, v);
                     Log.v("sai", "Current Back QuestionID----" + CurrentQuestionId);
                     CurrentQuestionId--;
                     adapter.notifyDataSetChanged();
-                   // adapter.getItem(CurrentQuestionId)
+                    // adapter.getItem(CurrentQuestionId)
                 } else {
                     Toast.makeText(getActivity(), "No Questions", Toast.LENGTH_SHORT).show();
                 }
@@ -290,18 +306,42 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             case R.id.right:
                 if (CurrentQuestionId <= mQuestionsCopy.size() - 2) {
 
-                    loadNextQuestion(CurrentQuestionId + 1,v);
+                    loadNextQuestion(CurrentQuestionId + 1, v);
                     Log.v("sai", "Current Next Question ID------" + CurrentQuestionId);
                     CurrentQuestionId++;
                 } else {
                     Toast.makeText(getActivity(), "No Questions", Toast.LENGTH_SHORT).show();
                 }
                 break;
-
+            case R.id.textsize:
+                startStrokeSelectorDialog();
+                break;
         }
 
     }
+    private void startStrokeSelectorDialog()
+    {
+        StrokeSelectorDialog dialog = StrokeSelectorDialog.newInstance(mCurrentStroke, 60);
 
+        dialog.setOnStrokeSelectedListener(new StrokeSelectorDialog.OnStrokeSelectedListener()
+        {
+            @Override
+            public void onStrokeSelected(int stroke)
+            {
+                mCurrentStroke = stroke;
+                        direction.setTextSize(mCurrentStroke);
+                        question.setTextSize(mCurrentStroke);
+                        opt1.setTextSize(mCurrentStroke);
+                        opt2.setTextSize(mCurrentStroke);
+                        opt3.setTextSize(mCurrentStroke);
+                        opt4.setTextSize(mCurrentStroke);
+                        opt5.setTextSize(mCurrentStroke);
+
+            }
+        });
+
+        dialog.show(getActivity().getSupportFragmentManager(), "StrokeSelectorDialog");
+    }
     public void loadQuestion(int i,View v) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1000, 1000);
         LinearLayout.LayoutParams questionparam = new LinearLayout.LayoutParams(200, 200);
@@ -373,9 +413,10 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 ch1Image.setVisibility(GONE);
                 if(quetionClass.getmAnswer()==1){
                     opt1.setText("\n"+"1)  " + Html.fromHtml(quetionClass.getChoice1()));
-                    opt1.setTextColor(Color.GREEN);
+                    opt1.setTypeface(null,Typeface.BOLD);
+
                 }else{
-                    opt1.setTextColor(Color.BLACK);
+                    opt1.setTypeface(null,Typeface.NORMAL);
                     opt1.setText("\n"+"1)  " + Html.fromHtml(quetionClass.getChoice1()));
                 }
             }
@@ -391,9 +432,9 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 ch2Image.setVisibility(GONE);
                 if(quetionClass.getmAnswer()==2){
                     opt2.setText("\n"+"2)  "+ Html.fromHtml(quetionClass.getChoice2()));
-                    opt2.setTextColor(Color.GREEN);
+                    opt2.setTypeface(null,Typeface.BOLD);
                 }else{
-                    opt2.setTextColor(Color.BLACK);
+                    opt2.setTypeface(null,Typeface.NORMAL);
                     opt2.setText("\n"+"2)  "+ Html.fromHtml(quetionClass.getChoice2()));
                 }
             }
@@ -410,9 +451,9 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
 
                 if(quetionClass.getmAnswer()==3){
                     opt3.setText("\n"+"3)  "+ Html.fromHtml(quetionClass.getChoice3()));
-                    opt3.setTextColor(Color.GREEN);
+                    opt3.setTypeface(null,Typeface.BOLD);
                 }else{
-                    opt3.setTextColor(Color.BLACK);
+                    opt3.setTypeface(null,Typeface.NORMAL);
                     opt3.setText("\n"+"3)  "+ Html.fromHtml(quetionClass.getChoice3()));
                 }
             }
@@ -428,9 +469,9 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 ch4Image.setVisibility(GONE);
                 if(quetionClass.getmAnswer()==4){
                     opt4.setText("\n"+"4)   "+ Html.fromHtml(quetionClass.getChoice4()));
-                    opt4.setTextColor(Color.GREEN);
+                    opt4.setTypeface(null,Typeface.BOLD);
                 }else{
-                    opt4.setTextColor(Color.BLACK);
+                    opt4.setTypeface(null,Typeface.NORMAL);
                     opt4.setText("\n"+"4)   "+ Html.fromHtml(quetionClass.getChoice4()));
                 }
             }
@@ -446,9 +487,9 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 ch5Image.setVisibility(GONE);
                 if(quetionClass.getmAnswer()==5){
                     opt5.setText("\n"+"5)   "+ Html.fromHtml(quetionClass.getChoice5()));
-                    opt5.setTextColor(Color.GREEN);
+                    opt5.setTypeface(null,Typeface.BOLD);
                 }else{
-                    opt5.setTextColor(Color.BLACK);
+                    opt5.setTypeface(null,Typeface.NORMAL);
                     opt5.setText("\n"+"5)   "+ Html.fromHtml(quetionClass.getChoice5()));
                 }
             }

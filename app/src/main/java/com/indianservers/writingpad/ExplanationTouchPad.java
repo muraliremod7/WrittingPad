@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -68,7 +69,7 @@ import java.util.zip.ZipInputStream;
 import android.os.Handler;
 import butterknife.ButterKnife;
 
-public class ExplanationTouchPad extends Fragment implements View.OnClickListener{
+public class ExplanationTouchPad extends Fragment{
 
     DrawingVieww mDrawingView;
     private ProgressDialog pDialog;
@@ -114,7 +115,7 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
             mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
             mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
             mDrawingView.setBackground(drawable);
-
+            mDrawingView.setPaintColor(Color.BLACK);
         }
         else if(drawable==null){
             initDrawingView();
@@ -436,6 +437,7 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         }
 
         return f;
+
     }
     public void callfragment(){
         QuestionViewFragment fragment2 = new QuestionViewFragment();
@@ -444,20 +446,5 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         fragmentTransaction.replace(R.id.activity_split_pane_right_pane, fragment2);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.left:
-                    saveImage();
-                break;
-            case R.id.right:
-                    saveImage();
-                break;
-
-        }
-
     }
 }

@@ -4,6 +4,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="spinner_title">Choose Image</string>
-    <string-array name="spinner"><item>Spinner 1</item>
-        <item>Spinner 2</item></string-array>
+    <string-array name="spinner">
+        <item>No Images</item>
+    </string-array>
 </resources>

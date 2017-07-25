@@ -160,5 +160,15 @@
         android:padding="5dp"
         android:scaleType="centerCrop"
         android:src="@drawable/earsers" />
+    <ImageButton
+        android:id="@+id/textsize"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorPrimary"
+        android:padding="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_gesture_white_24dp" />
 
 </RelativeLayout>

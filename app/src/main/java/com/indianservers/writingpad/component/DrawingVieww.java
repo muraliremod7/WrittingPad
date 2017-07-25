@@ -88,10 +88,6 @@ public class DrawingVieww extends View
 		}
 		canvas.drawPath(mDrawPath, mDrawPaint);
 	}
-	protected void onDRAW(Canvas canvas){
-		canvas.drawBitmap(mCanvasBitmap,0,0,mDrawPaint);
-		canvas.drawPath(mDrawPath, mDrawPaint);
-	}
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh)
 	{
@@ -99,10 +95,6 @@ public class DrawingVieww extends View
 
 		mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
-		mDrawCanvas = new Canvas(mCanvasBitmap);
-	}
-	public void setImage(Bitmap image){
-		mCanvasBitmap = image.copy(Bitmap.Config.ARGB_8888, true);
 		mDrawCanvas = new Canvas(mCanvasBitmap);
 	}
 	@Override
@@ -178,13 +170,6 @@ public class DrawingVieww extends View
 		invalidate();
 	}
 
-	public Bitmap getBitmap()
-	{
-		drawBackground(mDrawCanvas);
-		drawPaths(mDrawCanvas);
-		return mCanvasBitmap;
-	}
-
 	public void undo()
 	{
 		if (mPaths.size() > 0)
@@ -209,7 +194,9 @@ public class DrawingVieww extends View
 		isEraserActive = true;
 	}
 
-
+	public void eraser(){
+		mDrawPaint.setColor(Color.GREEN);
+	}
 	public void deactivateEraser()
 	{
 		isEraserActive = false;
