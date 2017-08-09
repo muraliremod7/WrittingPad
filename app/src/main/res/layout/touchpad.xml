@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-    <com.indianservers.writingpad.component.DrawingVieww
-        android:id="@+id/main_drawing_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.85"/>
-</LinearLayout>
+    android:layout_marginLeft="0dp"
+    android:orientation="horizontal" >
+<ImageView
+    android:layout_width="500dp"
+    android:scaleType="fitStart"
+    android:layout_height="wrap_content"
+    android:id="@+id/img" />
+<com.indianservers.writingpad.component.DrawingVieww
+    android:id="@+id/main_drawing_view"
+    android:layout_width="wrap_content"
+    android:background="@android:color/transparent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="0dp"
+    >
+</com.indianservers.writingpad.component.DrawingVieww>
+
+
+</FrameLayout>

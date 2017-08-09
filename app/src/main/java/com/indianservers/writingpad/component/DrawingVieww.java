@@ -7,11 +7,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -20,8 +23,9 @@ public class DrawingVieww extends View
 	private Path mDrawPath;
 	private Paint mBackgroundPaint;
 	private Paint mDrawPaint;
-	private Canvas mDrawCanvas;
+	public  Canvas mDrawCanvas;
 	private Bitmap mCanvasBitmap;
+	float touchX,touchY;
 	private float mX, mY;
 	private ArrayList<Path> mPaths = new ArrayList<>();
 	private ArrayList<Paint> mPaints = new ArrayList<>();
@@ -29,9 +33,9 @@ public class DrawingVieww extends View
 	private ArrayList<Paint> mUndonePaints = new ArrayList<>();
 	private ArrayList<Pair<Path, Paint>> paths = new ArrayList<Pair<Path, Paint>>();
 	// Set default values
-	private int mBackgroundColor = 0xFFFFFFFF;
-	private int mPaintColor = 0xFF660000;
-	private int mStrokeWidth = 10;
+	private int mBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.white);
+	private int mPaintColor = ContextCompat.getColor(getContext(), android.R.color.black);
+	private int mStrokeWidth = 5;
 	private boolean isEraserActive = false;
 	private static final float TOUCH_TOLERANCE = 4;
 	public DrawingVieww(Context context, AttributeSet attrs)
@@ -62,7 +66,7 @@ public class DrawingVieww extends View
 		mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
 	}
 
-	private void drawBackground(Canvas canvas)
+	public void drawBackground(Canvas canvas)
 	{
 		mBackgroundPaint.setColor(mBackgroundColor);
 		mBackgroundPaint.setStyle(Paint.Style.FILL);
@@ -90,19 +94,19 @@ public class DrawingVieww extends View
 		canvas.drawPath(mDrawPath, mDrawPaint);
 	}
 	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh)
+	public void onSizeChanged(int w, int h, int oldw, int oldh)
 	{
 		super.onSizeChanged(w, h, oldw, oldh);
-
 		mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 
 		mDrawCanvas = new Canvas(mCanvasBitmap);
 	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		float touchX = event.getX();
-		float touchY = event.getY();
+		touchX = event.getX();
+		touchY = event.getY();
 
 		switch (event.getAction())
 		{
@@ -114,7 +118,7 @@ public class DrawingVieww extends View
 					}else{
 						mDrawPaint.setColor(mBackgroundColor);
 					}
-					mDrawPaint.setStrokeWidth(mStrokeWidth+mStrokeWidth+mStrokeWidth);
+					mDrawPaint.setStrokeWidth(mStrokeWidth*3);
 					mDrawPath.moveTo(touchX, touchY);
 				} else {
 					mDrawPaint.setColor(mPaintColor);
@@ -122,14 +126,13 @@ public class DrawingVieww extends View
 
 				}
 				invalidate();
-				//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
 				break;
 			case MotionEvent.ACTION_MOVE:
 				mDrawPath.lineTo(touchX, touchY);
 				invalidate();
 				break;
 			case MotionEvent.ACTION_UP:
-				mDrawPath.lineTo(touchX, touchY);
+ 				mDrawPath.lineTo(touchX, touchY);
 				mPaths.add(mDrawPath);
 				mPaints.add(mDrawPaint);
 				mDrawPath = new Path();
@@ -142,7 +145,6 @@ public class DrawingVieww extends View
 		invalidate();
 		return true;
 	}
-
 	public void clearCanvas()
 	{
 		mPaths.clear();
@@ -154,6 +156,11 @@ public class DrawingVieww extends View
 	}
 
 	public void setPaintColor(int color)
+	{
+		mPaintColor = color;
+		mDrawPaint.setColor(mPaintColor);
+	}
+	public void getPaintColor(int color)
 	{
 		mPaintColor = color;
 		mDrawPaint.setColor(mPaintColor);

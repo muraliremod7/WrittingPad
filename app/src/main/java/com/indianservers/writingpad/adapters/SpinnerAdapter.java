@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +19,10 @@ import com.indianservers.writingpad.R;
 import com.indianservers.writingpad.model.SpinnerModel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by JNTUH on 19-07-2017.
- */
 
 public class SpinnerAdapter extends ArrayAdapter<String> {
     private Context context1;
@@ -31,7 +30,8 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     public Resources res;
     public String string;
     private LayoutInflater inflater;
-    SpinnerModel tempValues=null;
+    SpinnerModel tempValues = null;
+    TextView tvCategory;
     public SpinnerAdapter( Context context, ArrayList objects) {
         super(context,  R.layout.spinner, objects);
         this.context1 = context;
@@ -50,27 +50,49 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     // This funtion called for each row ( Called data.size() times )
     public View getCustomView(final int position, View convertView, ViewGroup parent) {
         View row = inflater.inflate(R.layout.spinner, parent, false);
-        tempValues = null;
-        tempValues = (SpinnerModel) data.get(position);
-        TextView tvCategory = (TextView) row.findViewById(R.id.sptext);
-        tvCategory.setText(tempValues.getImageName());
-        ImageView imageView = (ImageView)row.findViewById(R.id.imagespinner);
-        Bitmap bmp = BitmapFactory.decodeFile(tempValues.getImage());
-        imageView.setImageBitmap(bmp);
         ImageView delete = (ImageView)row.findViewById(R.id.delete);
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                File file= new File(tempValues.getImage());
-                if(file.exists())
-                {
-                    file.delete();
-                    data.remove(position);
-                    notifyDataSetChanged();
-                    Toast.makeText(getContext(),"File Deleted",Toast.LENGTH_LONG).show();
-                }
+         tvCategory = (TextView) row.findViewById(R.id.sptext);
+        if(position==0){
+            delete.setVisibility(View.INVISIBLE);
+            if(data.size()>1){
+                tvCategory.setText("Choose One Image");
+            }else if(data.size()==1){
+                tvCategory.setText("No Images");
             }
-        });
+
+        }else{
+            tempValues = (SpinnerModel) data.get(position);
+            tvCategory.setText(tempValues.getImageName());
+            ImageView imageView = (ImageView)row.findViewById(R.id.imagespinner);
+            try{
+                Bitmap bmp = BitmapFactory.decodeFile(((SpinnerModel) data.get(position)).getImage());
+                imageView.setImageBitmap(bmp);
+            }catch (OutOfMemoryError e){
+                e.printStackTrace();
+            }
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try{
+                        File file = null;
+                        file = new File(((SpinnerModel) data.get(position)).getImage());
+                        if(file.exists())
+                        {
+                            file.delete();
+                            data.remove(position);
+                            notifyDataSetChanged();
+                            Toast.makeText(getContext(),"File Deleted",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+
+
+                }
+            });
+       }
+
         return row;
     }
 

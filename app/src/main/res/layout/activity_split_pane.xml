@@ -1,63 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:titleTextColor="@android:color/white"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:background="?attr/colorPrimary">
+        app:titleTextColor="@android:color/white">
+
+
+        <ImageButton
+            android:id="@+id/pencil"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pen"
+            android:layout_margin="15dp"/>
+        <ImageButton
+            android:id="@+id/eraser1"
+            android:background="@drawable/earsers"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+
+        <ImageButton
+            android:id="@+id/delete1"
+            android:background="@android:drawable/ic_menu_delete"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+        <ImageButton
+            android:id="@+id/undo1"
+            android:background="@drawable/ic_action_undo"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+        <ImageButton
+            android:id="@+id/redo1"
+            android:background="@drawable/ic_action_redo"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+        <ImageButton
+            android:id="@+id/background1"
+            android:background="@drawable/ic_format_color_fill_white_24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+        <ImageButton
+            android:id="@+id/pencolor1"
+            android:background="@drawable/ic_palette_white_24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+
+        <ImageButton
+            android:id="@+id/thickness1"
+            android:background="@drawable/ic_gesture_white_24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+        <ImageButton
+            android:id="@+id/save1"
+            android:background="@drawable/saveimage"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"/>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:src="@drawable/sreedhar_logo"/>
         <Spinner
-            android:visibility="gone"
             android:id="@+id/spinner_nav"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            style="@style/mySpinnerStyle"
+            android:layout_width="500dp"
+            android:layout_height="50dp"
             android:background="@drawable/spinner_custom"
-            style="@style/mySpinnerStyle"
-            android:prompt="@string/spinner_title"
             android:spinnerMode="dialog" />
-        <Spinner
-            android:visibility="gone"
-            android:id="@+id/spinner_noimage"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            style="@style/mySpinnerStyle"
-            android:entries="@array/spinner" />
+
     </android.support.v7.widget.Toolbar>
+
+
     <!-- each frame layout will have weight set programatically,
         however we want to ensure that they have some size on first pass, so set width to 10dp -->
-    <LinearLayout
-        android:layout_below="@+id/toolbar"
-        android:id="@+id/activity_split_pane"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="50dp"
-        android:orientation="horizontal">
-
-    <FrameLayout
-        android:id="@+id/activity_split_pane_left_pane"
-        android:layout_width="10dp"
-        android:layout_height="wrap_content">
-
-    </FrameLayout>
-        <ImageView
-            android:id="@+id/activity_split_pane_divider"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/activity_split_pane"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/slider_bar" />
-        <FrameLayout
-            android:id="@+id/activity_split_pane_right_pane"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content">
+            android:orientation="horizontal"
+            android:layout_below="@+id/toolbar"
+            android:layout_alignParentStart="true">
 
-        </FrameLayout>
-    </LinearLayout>
+            <FrameLayout
+                android:id="@+id/activity_split_pane_left_pane"
+                android:layout_width="10dp"
+                android:layout_height="match_parent"  >
+
+            </FrameLayout>
+            <ImageView
+                android:id="@+id/activity_split_pane_divider"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/nobe" />
+            <FrameLayout
+                android:id="@+id/activity_split_pane_right_pane"
+                android:layout_width="10dp"
+                android:layout_height="wrap_content">
+            </FrameLayout>
+        </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -68,33 +125,32 @@
         <ImageButton
             android:id="@+id/left"
             android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_gravity="left"
             android:layout_weight="1"
-            android:background="@drawable/left"
-            android:layout_height="50dp"
-            />
+            android:background="@drawable/left" />
 
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
             android:scrollbars="horizontal">
+
             <it.sephiroth.android.library.widget.HListView
                 android:id="@+id/qno"
-                android:choiceMode="singleChoice"
-                android:listSelector="#02fff6"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            </it.sephiroth.android.library.widget.HListView>
+                android:layout_height="wrap_content"
+                android:choiceMode="singleChoice"
+                android:listSelector="#02fff6"></it.sephiroth.android.library.widget.HListView>
         </ScrollView>
 
         <ImageButton
             android:id="@+id/right"
-            android:background="@drawable/right"
             android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_gravity="right"
             android:layout_weight="1"
-            android:layout_height="50dp" />
+            android:background="@drawable/right" />
     </LinearLayout>
 
 </RelativeLayout>

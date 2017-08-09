@@ -3,6 +3,9 @@ package com.indianservers.writingpad;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
@@ -51,14 +54,9 @@ public class SplitPaneActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_split_pane);
-
-        // create list fragment and add to fm in the "left pane"
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
-        toolbar.setLogo(R.drawable.sreedhar_logo);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+       getSupportActionBar().setDisplayShowTitleEnabled(false);
         fragmentManager = getSupportFragmentManager();
         fragment = fragmentManager.findFragmentById(R.id.activity_split_pane_left_pane);
 
@@ -70,9 +68,6 @@ public class SplitPaneActivity extends AppCompatActivity  {
                         .commit();
             }
         }
-
-
-        // pull extras from intent
         mPercentLeft = getIntent().getFloatExtra(EXTRA_PERCENT_LEFT, 50);
         int minimumWidthDip = getIntent().getIntExtra(EXTRA_MINIMUM_WIDTH_DIP, 100);
 
@@ -142,12 +137,10 @@ public class SplitPaneActivity extends AppCompatActivity  {
         // get fragment manager and create new fragment transaction
 
         fragmentManager = getSupportFragmentManager();
-        fragment = fragmentManager.findFragmentById(R.id.activity_split_pane_left_pane);
-        android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if (fragment == null) {
             QuestionViewFragment fragment = new QuestionViewFragment().newInstance();
             if (fragment != null) {
-                fragmentTransaction
+                fragmentManager.beginTransaction()
                         .add(R.id.activity_split_pane_right_pane, fragment)
                         .commit();
             }

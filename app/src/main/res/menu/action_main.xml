@@ -1,45 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/eraser"
-        android:icon="@drawable/earsers"
-        app:showAsAction="always"
-        android:title="eraser"/>
-    <item
-        android:id="@+id/delete"
-        android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="always"
-        android:title="Delete"/>
-    <item android:title="Undo"
-        android:id="@+id/undo"
-        android:icon="@drawable/ic_action_undo"
-        app:showAsAction="always"/>
-    <item android:title="Redo"
-        android:id="@+id/redo"
-        android:icon="@drawable/ic_action_redo"
-        app:showAsAction="always"/>
-    <item android:title="Pad Background"
-        android:id="@+id/background"
-        android:icon="@drawable/ic_format_color_fill_white_24dp"
-        app:showAsAction="always"/>
-    <item android:title="Pen Color"
-        android:id="@+id/pencolor"
-        android:icon="@drawable/ic_palette_white_24dp"
-        app:showAsAction="always"/>
-    <item android:title="Pen Thickness"
-        android:id="@+id/thickness"
-        android:icon="@drawable/ic_gesture_white_24dp"
-        app:showAsAction="always"/>
+
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search_white_24dp"
         app:showAsAction="always|collapseActionView"
-        android:iconifiedByDefault="true"
         app:actionViewClass="android.support.v7.widget.SearchView"
         android:title="Search"/>
-    <item android:title="Save"
-        android:id="@+id/save"
-        android:icon="@drawable/save"
-        app:showAsAction="always"/>
+
 </menu>

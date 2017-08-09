@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.indianservers.writingpad.QuestionViewFragment;
 import com.indianservers.writingpad.QuestionsClass;
 import com.indianservers.writingpad.R;
 
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListviewArrayAdapter extends BaseAdapter {
-
+    private int PositionSelected = 0;
     Context context;
     List<QuestionsClass> mQuestionsSet = new ArrayList<>();
 
@@ -32,24 +33,33 @@ public class ListviewArrayAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return position;
+        return QuestionViewFragment.CurrentQuestionId;
     }
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return QuestionViewFragment.CurrentQuestionId;
     }
-
+    public void setPositionSelected(int position)
+    {
+        PositionSelected = position;
+        this.notifyDataSetChanged();
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView;
-
         LayoutInflater inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         rowView = inflater.inflate(R.layout.list_item_view, null);
         TextView textView = (TextView) rowView.findViewById(R.id.questionNumber);
             textView.setText(String.valueOf(mQuestionsSet.get(position).getmQno()));
-            rowView.setSelected(true);
+            if(position==PositionSelected){
+                rowView.setBackgroundColor(Color.GREEN);
+                notifyDataSetChanged();
+            }else{
+                rowView.setBackgroundColor(Color.WHITE);
+                notifyDataSetChanged();
+            }
         return rowView;
     }
 }

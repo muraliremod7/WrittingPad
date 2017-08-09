@@ -43,7 +43,7 @@ public class StrokeSelectorDialog extends DialogFragment
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder b = new  AlertDialog.Builder(getActivity())
-				.setTitle("Select stroke")
+				.setTitle("Select Size")
 				.setPositiveButton("Ok",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int whichButton) {

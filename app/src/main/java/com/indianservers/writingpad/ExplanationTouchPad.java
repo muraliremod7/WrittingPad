@@ -1,25 +1,21 @@
 package com.indianservers.writingpad;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -32,14 +28,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.indianservers.writingpad.adapters.SpinnerAdapter;
 import com.indianservers.writingpad.component.DrawingVieww;
 import com.indianservers.writingpad.services.AlertDialogManager;
 import com.indianservers.writingpad.services.ConnectionDetector;
@@ -53,72 +47,105 @@ import org.xdty.preference.colorpicker.ColorPickerSwatch;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import android.os.Handler;
+
 import butterknife.ButterKnife;
 
-public class ExplanationTouchPad extends Fragment{
+public class ExplanationTouchPad extends Fragment implements View.OnClickListener {
 
     DrawingVieww mDrawingView;
     private ProgressDialog pDialog;
     private int mCurrentBackgroundColor;
     private int mCurrentColor;
-    private int mCurrentStroke;
+    private int mCurrentStroke=5;
     private static final int MAX_STROKE_WIDTH = 50;
     private SharedPreferences.Editor editor;
     private ProgressBar progressBar;
     private int STORAGE_PERMISSION_CODE = 23;
     private String Id;
+    LinearLayout toolbaritemsLayout;
+    ImageButton pen,eraser, delete, undo, redo, backgroundcolor, pencolor, pensize, save;
     QuestionViewFragment questionViewFragment;
     private AlertDialogManager dialogManager;
     SharedPreferences teamID;
-    File sdcard  = Environment.getExternalStorageDirectory();
+    File sdcard = Environment.getExternalStorageDirectory();
+    private float downx = 0f;
+    private float downy = 0f;
+    ImageView view;
     public static ExplanationTouchPad newInstance() {
         ExplanationTouchPad fragment = new ExplanationTouchPad();
         return fragment;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
 
         View itemView = inflater.inflate(R.layout.touchpad, container, false);
         mDrawingView = (DrawingVieww) itemView.findViewById(R.id.main_drawing_view);
-         progressBar = new ProgressBar(getContext());
+        progressBar = new ProgressBar(getContext());
         ButterKnife.bind(getActivity());
         dialogManager = new AlertDialogManager();
         questionViewFragment = new QuestionViewFragment();
         teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String value = teamID.getString("pathname","1");
-         SharedPreferences.Editor editor = teamID.edit();
-        editor.remove("pathname");
-        editor.apply();
+        pen = (ImageButton)getActivity().findViewById(R.id.pencil);
+        eraser = (ImageButton) getActivity().findViewById(R.id.eraser1);
+        delete = (ImageButton) getActivity().findViewById(R.id.delete1);
+        undo = (ImageButton) getActivity().findViewById(R.id.undo1);
+        redo = (ImageButton) getActivity().findViewById(R.id.redo1);
+        backgroundcolor = (ImageButton) getActivity().findViewById(R.id.background1);
+        pencolor = (ImageButton) getActivity().findViewById(R.id.pencolor1);
+        pensize = (ImageButton) getActivity().findViewById(R.id.thickness1);
+        save = (ImageButton) getActivity().findViewById(R.id.save1);
+        pen.setOnClickListener(this);
+        eraser.setOnClickListener(this);
+        delete.setOnClickListener(this);
+        undo.setOnClickListener(this);
+        redo.setOnClickListener(this);
+        backgroundcolor.setOnClickListener(this);
+        pencolor.setOnClickListener(this);
+        pensize.setOnClickListener(this);
+        save.setOnClickListener(this);
+        view = (ImageView)itemView.findViewById(R.id.img);
+        String value = teamID.getString("pathname", "1");
         Bitmap bmp = BitmapFactory.decodeFile(value);
-        BitmapDrawable drawable = new BitmapDrawable(getResources(), bmp);
-        if(drawable!=null){
-            mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-            mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
-            mDrawingView.setBackground(drawable);
-            mDrawingView.setPaintColor(Color.BLACK);
-        }
-        else if(drawable==null){
-            initDrawingView();
+        if(bmp==null){
+
+        }else{
+            BitmapDrawable drawable = new BitmapDrawable(getResources(), bmp);
+            if (drawable != null) {
+                mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
+                mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
+
+              //  view.setMinimumWidth(300);
+            //    drawable.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+
+                drawable.setGravity(100);
+
+
+               // mDrawingView.setBackground(drawable);
+
+                view.setImageDrawable(drawable);
+                Log.v("sai","width---"+bmp.getWidth());
+
+            } else if (drawable == null) {
+                initDrawingView();
+            }
         }
         return itemView;
     }
@@ -135,47 +162,46 @@ public class ExplanationTouchPad extends Fragment{
     }
 
     //Requesting permission
-    private void requestStoragePermission(){
+    private void requestStoragePermission() {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             //If the user has denied the permission previously your code will come to this block
             //Here you can explain why you need this permission
             //Explain here why you need this permission
 
         }
         //And finally ask for the permission
-        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},STORAGE_PERMISSION_CODE);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
     }
+
     //This method will be called when the user will tap on allow or deny
     @Override
-    public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         //Checking the request code of our request
-        if(requestCode == STORAGE_PERMISSION_CODE){
+        if (requestCode == STORAGE_PERMISSION_CODE) {
 
             //If permission is granted
-            if(grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //Displaying a toast
-                Toast.makeText(getActivity(),"Permission granted now you can read the storage",Toast.LENGTH_LONG).show();
-            }else{
+                Toast.makeText(getActivity(), "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+            } else {
                 //Displaying another toast if permission is not granted
-                Toast.makeText(getActivity(),"Oops you just denied the permission",Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Oops you just denied the permission", Toast.LENGTH_LONG).show();
             }
         }
         return;
     }
 
-    private void initDrawingView()
-    {
+    private void initDrawingView() {
         mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.white);
         mCurrentColor = ContextCompat.getColor(getContext(), android.R.color.black);
-        mCurrentStroke = 10;
+        mCurrentStroke = 5;
         mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
         mDrawingView.setPaintColor(mCurrentColor);
         mDrawingView.setPaintStrokeWidth(mCurrentStroke);
     }
 
-    private void startFillBackgroundDialog()
-    {
+    private void startFillBackgroundDialog() {
         int[] colors = getResources().getIntArray(R.array.palette);
 
         ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_default_title,
@@ -184,12 +210,10 @@ public class ExplanationTouchPad extends Fragment{
                 5,
                 ColorPickerDialog.SIZE_SMALL);
 
-        dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener()
-        {
+        dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
 
             @Override
-            public void onColorSelected(int color)
-            {
+            public void onColorSelected(int color) {
                 mCurrentBackgroundColor = color;
                 mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
             }
@@ -199,8 +223,7 @@ public class ExplanationTouchPad extends Fragment{
         dialog.show(getActivity().getFragmentManager(), "ColorPickerDialog");
     }
 
-    private void startColorPickerDialog()
-    {
+    private void startColorPickerDialog() {
         int[] colors = getResources().getIntArray(R.array.palette);
 
         ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_default_title,
@@ -209,12 +232,10 @@ public class ExplanationTouchPad extends Fragment{
                 5,
                 ColorPickerDialog.SIZE_SMALL);
 
-        dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener()
-        {
+        dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
 
             @Override
-            public void onColorSelected(int color)
-            {
+            public void onColorSelected(int color) {
                 mCurrentColor = color;
                 mDrawingView.setPaintColor(mCurrentColor);
             }
@@ -224,23 +245,19 @@ public class ExplanationTouchPad extends Fragment{
         dialog.show(getActivity().getFragmentManager(), "ColorPickerDialog");
     }
 
-    private void startStrokeSelectorDialog()
-    {
+    private void startStrokeSelectorDialog() {
         StrokeSelectorDialog dialog = StrokeSelectorDialog.newInstance(mCurrentStroke, MAX_STROKE_WIDTH);
-
-        dialog.setOnStrokeSelectedListener(new StrokeSelectorDialog.OnStrokeSelectedListener()
-        {
+        dialog.setOnStrokeSelectedListener(new StrokeSelectorDialog.OnStrokeSelectedListener() {
             @Override
-            public void onStrokeSelected(int stroke)
-            {
+            public void onStrokeSelected(int stroke) {
                 mCurrentStroke = stroke;
                 mDrawingView.setPaintStrokeWidth(mCurrentStroke);
             }
         });
-
         dialog.show(getActivity().getSupportFragmentManager(), "StrokeSelectorDialog");
     }
-    public void timerDelayRemoveDialog(long time, final ProgressDialog d){
+
+    public void timerDelayRemoveDialog(long time, final ProgressDialog d) {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
@@ -248,6 +265,7 @@ public class ExplanationTouchPad extends Fragment{
             }
         }, time);
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Do something that differs the Activity's menu here
@@ -256,117 +274,76 @@ public class ExplanationTouchPad extends Fragment{
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
 
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    ConnectionDetector detector = new ConnectionDetector(getContext());
-                    if(detector.isNetworkOn(getContext())){
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                ConnectionDetector detector = new ConnectionDetector(getContext());
+                if (detector.isNetworkOn(getContext())) {
                     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
                     editor = settings.edit();
                     editor.putString("input", query);
                     editor.commit();
 
-                    if(isReadStorageAllowed()){
+                    if (isReadStorageAllowed()) {
                         startDownload(query);
                         //If permission is already having then showing the toast
                         //Existing the method with return
                         return true;
-                    }else{
+                    } else {
                         requestStoragePermission();
                     }
-                    }else{
-                        dialogManager.showAlertDialog1(getContext(),"No Internet Connection","Check Network Settings",false);
-                    }
-                    return true;
+                } else {
+                    dialogManager.showAlertDialog1(getContext(), "No Internet Connection", "Check Network Settings", false);
                 }
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    Log.i("well", " this worked");
-                    return false;
-                }
-            });
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.i("well", " this worked");
+                return false;
+            }
+        });
 
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.eraser:
-                if (item.getItemId()==R.id.eraser) {
-
-                    if (mDrawingView.isEraserActive()) {
-
-                        mDrawingView.deactivateEraser();
-
-                        item.setIcon(R.drawable.earsers);
-
-                    } else {
-
-                        mDrawingView.activateEraser();
-
-                        item.setIcon(R.drawable.pen);
-                    }
-                }
-                break;
-            case R.id.delete:
-                mDrawingView.clearCanvas();
-                break;
-            case R.id.undo:
-                mDrawingView.undo();
-                break;
-            case R.id.redo:
-                mDrawingView.redo();
-                break;
-            case R.id.background:
-                startFillBackgroundDialog();
-                break;
-            case R.id.pencolor:
-                startColorPickerDialog();
-                break;
-            case R.id.thickness:
-                startStrokeSelectorDialog();
-                break;
-            case R.id.save:
-                saveImage();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
     private void startDownload(String query) {
         pDialog = new ProgressDialog(getContext());
         pDialog.setMessage("Downloading");
         pDialog.setCancelable(false);
         pDialog.show();
-        timerDelayRemoveDialog(5*1000,pDialog);
+        timerDelayRemoveDialog(5 * 1000, pDialog);
         teamID = PreferenceManager.getDefaultSharedPreferences(getContext());
-        Id = teamID.getString("input","0");
+        Id = teamID.getString("input", "0");
         Ion.with(getContext())
-                .load("http://sreedharscce.com/android/"+query+"/"+query+".zip")
-                .progress(new ProgressCallback() {@Override
-                public void onProgress(long downloaded, long total) {
-                    System.out.println("" + downloaded + " / " + total);
-                }
+                .load("http://sreedharscce.com/android/" + query + "/" + query + ".zip")
+                .progress(new ProgressCallback() {
+                    @Override
+                    public void onProgress(long downloaded, long total) {
+                        System.out.println("" + downloaded + " / " + total);
+                    }
                 })
-                .write(new File(sdcard,Id+".zip"))
+                .write(new File(sdcard, Id + ".zip"))
                 .setCallback(new FutureCallback<File>() {
                     @Override
                     public void onCompleted(Exception e, File file) {
-                        if(e!=null){
+                        if (e != null) {
 
                         }
                         // download done...
-                        if(pDialog.isShowing()){
+                        if (pDialog.isShowing()) {
                             pDialog.dismiss();
                         }
                         String zipFilePath = sdcard
-                                .getAbsolutePath()+"/";
-                        unpackZip(zipFilePath, Id+".zip");
+                                .getAbsolutePath() + "/";
+                        unpackZip(zipFilePath, Id + ".zip");
                         callfragment();
                         // do stuff with the File or error
                     }
                 });
     }
+
     private boolean unpackZip(String path, String zipname) {
         InputStream is;
         ZipInputStream zis;
@@ -377,11 +354,11 @@ public class ExplanationTouchPad extends Fragment{
             ZipEntry mZipEntry;
             byte[] buffer = new byte[1024];
             int count;
-            File fileDirectory = new File(sdcard.getAbsolutePath()+"/SreedharCCE/"+Id);
+            File fileDirectory = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id);
             // have the object build the directory structure, if needed.
-            if(fileDirectory.equals(null)){
+            if (fileDirectory.equals(null)) {
                 fileDirectory.delete();
-            }else{
+            } else {
                 fileDirectory.mkdirs();
                 while ((mZipEntry = zis.getNextEntry()) != null) {
                     // zapis do souboru
@@ -414,32 +391,84 @@ public class ExplanationTouchPad extends Fragment{
 
         return true;
     }
+
     public File saveImage() {
-        mDrawingView.setDrawingCacheEnabled(true);
-        Bitmap bm = mDrawingView.getDrawingCache();
-        String Id = teamID.getString("input","0");
-        int currentquestionid = QuestionViewFragment.CurrentQuestionId+1;
-        File fileDirectory = new File(sdcard.getAbsolutePath()+"/SreedharCCE/"+Id+"/"+currentquestionid);
-        // have the object build the directory structure, if needed.
-        fileDirectory.mkdirs();
         File f = null;
-        String timeStamp = new SimpleDateFormat("yyyy:MM:dd_HH:mm:ss").format(Calendar.getInstance().getTime());
-        f = new File(fileDirectory, currentquestionid+"::"+timeStamp+ ".png");
+        BitmapDrawable drawable = (BitmapDrawable) view.getDrawable();
+        if(drawable==null){
+            try {
+                mDrawingView.setDrawingCacheEnabled(true);
+                //mDrawingView.
+                Bitmap bmm = mDrawingView.getDrawingCache(true);//.getDrawingCache();
+                //bmm.setWidth(1200);
 
-        try {
-            FileOutputStream strm = new FileOutputStream(f);
-            bm.compress(Bitmap.CompressFormat.PNG, 80, strm);
-            strm.close();
+                String Id = teamID.getString("input", "0");
+                int currentquestionid = QuestionViewFragment.CurrentQuestionId + 1;
+                File fileDirectory = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + currentquestionid);
+                // have the object build the directory structure, if needed.
+                fileDirectory.mkdirs();
 
-            Toast.makeText(getContext(), "Image is saved successfully.", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
+                String timeStamp = new SimpleDateFormat("yyyy:MM:dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+                f = new File(fileDirectory, currentquestionid + "::" + timeStamp + ".png");
+                FileOutputStream strm = new FileOutputStream(f);
+                bmm.compress(Bitmap.CompressFormat.PNG, 80, strm);
+                //imageBm.compress(Bitmap.CompressFormat.PNG, 80, strm);
+                strm.close();
+
+                Toast.makeText(getContext(), "Image is saved successfully.", Toast.LENGTH_SHORT).show();
+                FragmentManager fm = getFragmentManager();
+                QuestionViewFragment fragm = (QuestionViewFragment) fm.findFragmentById(R.id.activity_split_pane_right_pane);
+                fragm.getFileNames(currentquestionid,Id);
+            }
+            catch (FileNotFoundException ex){
+                ex.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if(view!=null){
+            try {
+                BitmapDrawable drawabl = (BitmapDrawable) view.getDrawable();
+                Bitmap bitmap = drawabl.getBitmap();
+                mDrawingView.setDrawingCacheEnabled(true);
+             //   mDrawingView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+                Bitmap bmm = mDrawingView.getDrawingCache();
+                Bitmap mBackground = Bitmap.createBitmap(bmm.getWidth(), bmm.getHeight(), Bitmap.Config.ARGB_8888);
+                //Toast.makeText(getActivity(), "width---"+bmm.getWidth(), Toast.LENGTH_SHORT).show();
+                Log.v("sai","width---"+bmm.getWidth());
+                Canvas mComboImage = new Canvas(mBackground);
+                mComboImage.drawBitmap(bitmap, 0f, 0f, null);
+                mComboImage.drawBitmap(bmm, 0f, 0f, null);
+                BitmapDrawable mBitmapDrawable = new BitmapDrawable(mBackground);
+                Bitmap mNewSaving = ((BitmapDrawable) mBitmapDrawable).getBitmap();
+                String Id = teamID.getString("input", "0");
+                int currentquestionid = QuestionViewFragment.CurrentQuestionId + 1;
+                File fileDirectory = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + currentquestionid);
+                // have the object build the directory structure, if needed.
+                fileDirectory.mkdirs();
+
+                String timeStamp = new SimpleDateFormat("yyyy:MM:dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+                f = new File(fileDirectory, currentquestionid + "::" + timeStamp + ".png");
+                FileOutputStream strm = new FileOutputStream(f);
+                mNewSaving.compress(Bitmap.CompressFormat.PNG, 80, strm);
+                strm.close();
+                Toast.makeText(getContext(), "Image is saved successfully.", Toast.LENGTH_SHORT).show();
+                FragmentManager fm = getFragmentManager();
+                QuestionViewFragment fragm = (QuestionViewFragment) fm.findFragmentById(R.id.activity_split_pane_right_pane);
+                fragm.getFileNames(currentquestionid,Id);
+            }
+            catch (FileNotFoundException ex){
+                ex.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
         return f;
 
     }
-    public void callfragment(){
+
+    public void callfragment() {
         QuestionViewFragment fragment2 = new QuestionViewFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -447,4 +476,50 @@ public class ExplanationTouchPad extends Fragment{
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case  R.id.pencil:
+                if (mDrawingView.isEraserActive()) {
+                    mDrawingView.deactivateEraser();
+                    Toast.makeText(getContext(),"Pen Selected",Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.eraser1:
+                if (v.getId() == R.id.eraser1) {
+                        mDrawingView.activateEraser();
+                    Toast.makeText(getContext(),"Eraser Selected",Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.delete1:
+                mDrawingView.clearCanvas();
+                mDrawingView.setBackgroundColor(Color.WHITE);
+                break;
+            case R.id.undo1:
+                mDrawingView.undo();
+                break;
+            case R.id.redo1:
+                mDrawingView.redo();
+                break;
+            case R.id.background1:
+                startFillBackgroundDialog();
+                break;
+            case R.id.pencolor1:
+                startColorPickerDialog();
+                break;
+            case R.id.thickness1:
+
+                //startStrokeSelectorDialog();
+                break;
+            case R.id.save1:
+                saveImage();
+                break;
+
+
+        }
+
+    }
+
 }

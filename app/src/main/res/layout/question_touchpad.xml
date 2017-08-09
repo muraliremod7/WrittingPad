@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/question_fragment"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
-    <ScrollView
-        android:id="@+id/scroll_main"
+    android:layout_height="match_parent"
+    android:background="#FFFF">
+    <android.gesture.GestureOverlayView
+        android:id="@+id/gestures"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
-        <android.gesture.GestureOverlayView
-            android:id="@+id/gestures"
+        android:eventsInterceptionEnabled="true"
+        android:fadeDuration="1000000"
+        android:fadeEnabled="false"
+        android:fadeOffset="1000000"
+        android:gestureStrokeWidth="5"
+        android:gestureColor="@color/colorAccent"
+        android:gestureStrokeType="multiple"
+        android:orientation="vertical"
+        android:background="#FFFF"
+        android:uncertainGestureColor="#000">
+        <ScrollView
+            android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:eventsInterceptionEnabled="true"
-            android:fadeDuration="1000000"
-            android:fadeEnabled="false"
-            android:fadeOffset="1000000"
-            android:gestureStrokeWidth="5"
-            android:gestureColor="@color/colorAccent"
-            android:gestureStrokeType="multiple"
-            android:orientation="vertical"
-            android:uncertainGestureColor="#000">
-
+            android:background="#FFFF"
+            android:fillViewport="true">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="60dp"
+                android:paddingBottom="80dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -38,18 +41,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
                     android:padding="5dp"
-                    android:textSize="20sp"/>
+                    android:textStyle="bold"
+                    android:textSize="25sp"/>
                 <TextView
-                    android:id="@+id/question_direction"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="15dp"
-                    android:padding="5dp"
-                    android:textColor="@android:color/holo_purple"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                android:id="@+id/question_direction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"
+                android:padding="5dp"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
                 <WebView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -76,9 +81,9 @@
 
                 <ImageView
                     android:id="@+id/image_question"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:visibility="gone"
-                    android:layout_height="match_parent" />
+                    android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/opt1"
                     android:layout_width="wrap_content"
@@ -141,34 +146,51 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginTop="30dp"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:paddingBottom="50dp"/>
                 <ImageView
                     android:id="@+id/choi5_image"
                     android:layout_width="50dp"
                     android:visibility="gone"
                     android:layout_height="60dp" />
             </LinearLayout>
-        </android.gesture.GestureOverlayView>
-    </ScrollView>
-    <ImageButton
-        android:id="@+id/clear"
-        android:layout_width="50dp"
+        </ScrollView>
+    </android.gesture.GestureOverlayView>
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
-        android:padding="5dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/earsers" />
-    <ImageButton
-        android:id="@+id/textsize"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:background="@color/colorPrimary"
-        android:padding="5dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_gesture_white_24dp" />
-
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true">
+        <ImageButton
+            android:id="@+id/pengesture"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/pen" />
+        <ImageButton
+            android:id="@+id/textsize"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="5dp"
+            android:layout_marginLeft="20dp"
+            android:scaleType="centerCrop"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/increasetext" />
+        <ImageButton
+            android:id="@+id/clear"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="5dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_delete" />
+        <ImageButton
+            android:id="@+id/pengesturecancel"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/stop" />
+    </LinearLayout>
 </RelativeLayout>
