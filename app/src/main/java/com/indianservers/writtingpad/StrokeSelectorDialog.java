@@ -1,4 +1,4 @@
-package com.indianservers.writingpad;
+package com.indianservers.writtingpad;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

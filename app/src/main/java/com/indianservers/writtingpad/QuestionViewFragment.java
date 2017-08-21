@@ -1,16 +1,10 @@
-package com.indianservers.writingpad;
+package com.indianservers.writtingpad;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.gesture.GestureOverlayView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -19,35 +13,29 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
-import com.indianservers.writingpad.adapters.ListviewArrayAdapter;
-import com.indianservers.writingpad.adapters.SpinnerAdapter;
-import com.indianservers.writingpad.component.DrawingVieww;
-import com.indianservers.writingpad.model.SpinnerModel;
-import com.indianservers.writingpad.services.AlertDialogManager;
-import com.indianservers.writingpad.services.ConnectionDetector;
+import com.indianservers.writtingpad.adapters.ListviewArrayAdapter;
+import com.indianservers.writtingpad.adapters.SpinnerAdapter;
+import com.indianservers.writtingpad.model.SpinnerModel;
+import com.indianservers.writtingpad.services.AlertDialogManager;
+import com.indianservers.writtingpad.services.ConnectionDetector;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
@@ -76,6 +64,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     RequestQueue requestQueue;
     private AlertDialogManager dialogManager;
     ImageButton clear, textStroke, gesturepen,gesturestop;
+    ImageView righ,lef;
     GestureOverlayView gestures;
     TextView questionNumber, itemNumber, direction, question, opt1, opt2, opt3, opt4, opt5;
     ImageView ch1Image, ch2Image, ch3Image, ch4Image, ch5Image, questionImage, directionImage;
@@ -142,6 +131,10 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         ch3Image = (ImageView) itemView.findViewById(R.id.choi3_image);
         ch4Image = (ImageView) itemView.findViewById(R.id.choi4_image);
         ch5Image = (ImageView) itemView.findViewById(R.id.choi5_image);
+        lef = (ImageView) itemView.findViewById(R.id.qleft);
+        lef.setOnClickListener(this);
+        righ = (ImageView) itemView.findViewById(R.id.qright);
+        righ.setOnClickListener(this);
         itemNumber = (TextView) getActivity().findViewById(R.id.questionNumber);
         cd = new ConnectionDetector(getActivity());
         questionsClassObj = new QuestionsClass();
@@ -185,15 +178,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                     String currentImage = ((TextView) view.findViewById(R.id.sptext)).getText().toString();
                     spinAdapter.notifyDataSetChanged();
                     int pos = CurrentQuestionId + 1;
-                    if(currentImage.equals("Choose One Image")){
-                        String value = teamID.getString("pathname", "1");
-                        //currentImage = value;
-                        String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + value).getAbsolutePath();
-                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
-                        editor = settings.edit();
-                        editor.putString("pathname", pathName);
-                        editor.commit();
-                        callfragment();
+                    if(currentImage.equals("Select")||currentImage.equals("No Images")){
                     }else{
                         String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + currentImage).getAbsolutePath();
                         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -244,19 +229,23 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                                 }
                                 // RecycleViewAdapter adapter1 = new RecycleViewAdapter(getActivity(),result);
                                 adapter = new ListviewArrayAdapter(getActivity(), mQuestionSet);
-                                listView = (it.sephiroth.android.library.widget.HListView) getActivity().findViewById(R.id.qno);
-                                listView.setAdapter(adapter);
-                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                        CurrentQuestionId = position;
-                                        int Position = position + 1;
-                                        getFileNames(Position, Id);
-                                        loadQuestion(position, view);
-                                        int op = CurrentQuestionId;
-                                        adapter.setPositionSelected(op);
-                                    }
-                                });
+                                try{
+                                    listView = (it.sephiroth.android.library.widget.HListView) getActivity().findViewById(R.id.qno);
+                                    listView.setAdapter(adapter);
+                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                            CurrentQuestionId = position;
+                                            int Position = position + 1;
+                                            getFileNames(Position, Id);
+                                            loadQuestion(position, view);
+                                            int op = CurrentQuestionId;
+                                            adapter.setPositionSelected(op);
+                                        }
+                                    });
+                                }catch (NullPointerException e1){
+                                    e1.printStackTrace();
+                                }
                             } catch (JSONException e1) {
                                 e1.printStackTrace();
                             }
@@ -365,9 +354,6 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 break;
             case R.id.right:
                 if (CurrentQuestionId <= mQuestionsCopy.size() - 2) {
-                    FragmentManager fm = getFragmentManager();
-                    ExplanationTouchPad fragm = (ExplanationTouchPad) fm.findFragmentById(R.id.activity_split_pane_left_pane);
-                    fragm.saveImage();
                     loadNextQuestion(CurrentQuestionId + 1, v);
                     Log.v("sai", "Current Next Question ID------" + CurrentQuestionId);
                     CurrentQuestionId++;
@@ -405,6 +391,18 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                     }
                 });
                 break;
+            case R.id.qleft:
+                lef.setVisibility(View.GONE);
+                righ.setVisibility(View.VISIBLE);
+                View forgotLayout = getActivity().findViewById(R.id.qfolayout);
+                forgotLayout.setVisibility(View.VISIBLE);
+                break;
+            case R.id.qright:
+                righ.setVisibility(View.GONE);
+                lef.setVisibility(View.VISIBLE);
+                View forgotLayoutt = getActivity().findViewById(R.id.qfolayout);
+                forgotLayoutt.setVisibility(View.GONE);
+                break;
         }
 
     }
@@ -431,8 +429,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     }
 
     public void loadQuestion(int i, View v) {
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1000, 1000);
-        LinearLayout.LayoutParams questionparam = new LinearLayout.LayoutParams(500, 500);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1200, 700);
         if (i >= 0 || i <= mQuestionsCopy.size()) {
 
             QuestionsClass quetionClass = mQuestionsCopy.get(i);
@@ -480,7 +477,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
                 question.setVisibility(GONE);
                 questionImage.setVisibility(View.VISIBLE);
-                questionImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 1500, 50, false));
+                questionImage.setImageBitmap(bitmap);
             } else {
                 question.setVisibility(View.VISIBLE);
                 questionImage.setVisibility(GONE);

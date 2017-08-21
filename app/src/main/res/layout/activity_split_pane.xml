@@ -101,7 +101,7 @@
             <FrameLayout
                 android:id="@+id/activity_split_pane_left_pane"
                 android:layout_width="10dp"
-                android:layout_height="match_parent"  >
+                android:layout_height="match_parent">
 
             </FrameLayout>
             <ImageView

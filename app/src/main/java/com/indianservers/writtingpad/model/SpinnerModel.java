@@ -1,4 +1,4 @@
-package com.indianservers.writingpad.model;
+package com.indianservers.writtingpad.model;
 
 /**
  * Created by JNTUH on 21-07-2017.

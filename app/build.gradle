@@ -5,7 +5,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "com.indianservers.writingpad"
+        applicationId "com.indianservers.writtingpad"
         minSdkVersion 23
         targetSdkVersion 25
         versionCode 1
@@ -36,4 +36,5 @@ dependencies {
     compile 'org.xdty.preference:color-picker:0.0.4'
     compile 'com.koushikdutta.ion:ion:2.+'
     testCompile 'junit:junit:4.12'
+    compile 'com.flying.xiaopo:sticker:1.6.0'
 }

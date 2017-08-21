@@ -1,4 +1,4 @@
-package com.indianservers.writingpad;
+package com.indianservers.writtingpad;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -7,9 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -28,15 +26,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.indianservers.writingpad.component.DrawingVieww;
-import com.indianservers.writingpad.services.AlertDialogManager;
-import com.indianservers.writingpad.services.ConnectionDetector;
+import com.indianservers.writtingpad.component.DrawingVieww;
+import com.indianservers.writtingpad.services.AlertDialogManager;
+import com.indianservers.writtingpad.services.ConnectionDetector;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
@@ -61,7 +59,7 @@ import android.os.Handler;
 import butterknife.ButterKnife;
 
 public class ExplanationTouchPad extends Fragment implements View.OnClickListener {
-
+    ImageView up,down,line,circle,traingle,rect,sqaure;
     DrawingVieww mDrawingView;
     private ProgressDialog pDialog;
     private int mCurrentBackgroundColor;
@@ -72,7 +70,6 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
     private ProgressBar progressBar;
     private int STORAGE_PERMISSION_CODE = 23;
     private String Id;
-    LinearLayout toolbaritemsLayout;
     ImageButton pen,eraser, delete, undo, redo, backgroundcolor, pencolor, pensize, save;
     QuestionViewFragment questionViewFragment;
     private AlertDialogManager dialogManager;
@@ -95,7 +92,6 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
-
         View itemView = inflater.inflate(R.layout.touchpad, container, false);
         mDrawingView = (DrawingVieww) itemView.findViewById(R.id.main_drawing_view);
         progressBar = new ProgressBar(getContext());
@@ -112,6 +108,21 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         pencolor = (ImageButton) getActivity().findViewById(R.id.pencolor1);
         pensize = (ImageButton) getActivity().findViewById(R.id.thickness1);
         save = (ImageButton) getActivity().findViewById(R.id.save1);
+
+        up = (ImageView)itemView.findViewById(R.id.up);
+        up.setOnClickListener(this);
+        down = (ImageView)itemView.findViewById(R.id.down);
+        down.setOnClickListener(this);
+        line = (ImageView)itemView.findViewById(R.id.line);
+        line.setOnClickListener(this);
+        circle = (ImageView)itemView.findViewById(R.id.circle);
+        circle.setOnClickListener(this);
+//        traingle = (ImageView)itemView.findViewById(R.id.traingle);
+//        traingle.setOnClickListener(this);
+        rect = (ImageView)itemView.findViewById(R.id.rectangle);
+        rect.setOnClickListener(this);
+        sqaure = (ImageView)itemView.findViewById(R.id.square);
+        sqaure.setOnClickListener(this);
         pen.setOnClickListener(this);
         eraser.setOnClickListener(this);
         delete.setOnClickListener(this);
@@ -123,32 +134,34 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         save.setOnClickListener(this);
         view = (ImageView)itemView.findViewById(R.id.img);
         String value = teamID.getString("pathname", "1");
-        Bitmap bmp = BitmapFactory.decodeFile(value);
-        if(bmp==null){
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        editor = settings.edit();
+        editor.putString("previousImage", value);
+        editor.commit();
+        try{
+            Bitmap bmp = BitmapFactory.decodeFile(value);
+            if(bmp==null){
+            }else{
+                BitmapDrawable drawable = new BitmapDrawable(getResources(), bmp);
+                if (drawable != null) {
+                    mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
+                    mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
+                    drawable.setGravity(100);
+                    view.setImageDrawable(drawable);
+                    mDrawingView.mCurrentShape = DrawingVieww.SMOOTHLINE;
+                    Log.v("sai","width---"+bmp.getWidth());
 
-        }else{
-            BitmapDrawable drawable = new BitmapDrawable(getResources(), bmp);
-            if (drawable != null) {
-                mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-                mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
-
-              //  view.setMinimumWidth(300);
-            //    drawable.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-
-                drawable.setGravity(100);
-
-
-               // mDrawingView.setBackground(drawable);
-
-                view.setImageDrawable(drawable);
-                Log.v("sai","width---"+bmp.getWidth());
-
-            } else if (drawable == null) {
-                initDrawingView();
+                } else if (drawable == null) {
+                    initDrawingView();
+                }
             }
+        }catch (OutOfMemoryError error){
+            error.printStackTrace();
         }
+
         return itemView;
     }
+
     //We are calling this method to check the permission status
     private boolean isReadStorageAllowed() {
         //Getting the permission status
@@ -482,10 +495,8 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
 
         switch (v.getId()) {
             case  R.id.pencil:
-                if (mDrawingView.isEraserActive()) {
-                    mDrawingView.deactivateEraser();
-                    Toast.makeText(getContext(),"Pen Selected",Toast.LENGTH_LONG).show();
-                }
+                mDrawingView.deactivateEraser();
+                mDrawingView.mCurrentShape = DrawingVieww.SMOOTHLINE;
                 break;
             case R.id.eraser1:
                 if (v.getId() == R.id.eraser1) {
@@ -495,7 +506,7 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
                 break;
             case R.id.delete1:
                 mDrawingView.clearCanvas();
-                mDrawingView.setBackgroundColor(Color.WHITE);
+                view.setImageResource(0);
                 break;
             case R.id.undo1:
                 mDrawingView.undo();
@@ -510,11 +521,43 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
                 startColorPickerDialog();
                 break;
             case R.id.thickness1:
-
-                //startStrokeSelectorDialog();
+                startStrokeSelectorDialog();
                 break;
             case R.id.save1:
                 saveImage();
+                break;
+            case R.id.up:
+                up.setVisibility(View.GONE);
+                down.setVisibility(View.VISIBLE);
+                View forgotLayout = getActivity().findViewById(R.id.shapeslayout);
+                forgotLayout.setAnimation(AnimationUtils.makeInAnimation(getActivity(),true));
+                forgotLayout.setVisibility(View.VISIBLE);
+                break;
+            case R.id.down:
+                down.setVisibility(View.GONE);
+                up.setVisibility(View.VISIBLE);
+                View forgotLayoutt = getActivity().findViewById(R.id.shapeslayout);
+                forgotLayoutt.setVisibility(View.GONE);
+                break;
+            case R.id.line:
+                mDrawingView.deactivateEraser();
+              mDrawingView.mCurrentShape = DrawingVieww.LINE;
+                break;
+            case R.id.circle:
+                mDrawingView.deactivateEraser();
+                mDrawingView.mCurrentShape = DrawingVieww.CIRCLE;
+                break;
+//            case R.id.traingle:
+//                mDrawingView.deactivateEraser();
+//                mDrawingView.mCurrentShape = DrawingVieww.TRIANGLE;
+//                break;
+            case R.id.rectangle:
+                mDrawingView.deactivateEraser();
+                mDrawingView.mCurrentShape = DrawingVieww.RECTANGLE;
+                break;
+            case R.id.square:
+                mDrawingView.deactivateEraser();
+                mDrawingView.mCurrentShape = DrawingVieww.SQUARE;
                 break;
 
 

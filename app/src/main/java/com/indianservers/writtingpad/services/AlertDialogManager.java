@@ -1,4 +1,4 @@
-package com.indianservers.writingpad.services;
+package com.indianservers.writtingpad.services;
 
 /**
  * Created by Hari Prahlad on 24-04-2016.
@@ -13,7 +13,7 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 
-import com.indianservers.writingpad.R;
+import com.indianservers.writtingpad.R;
 
 
 public class AlertDialogManager {

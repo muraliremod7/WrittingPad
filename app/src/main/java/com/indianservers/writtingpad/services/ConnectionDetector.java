@@ -1,4 +1,4 @@
-package com.indianservers.writingpad.services;
+package com.indianservers.writtingpad.services;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

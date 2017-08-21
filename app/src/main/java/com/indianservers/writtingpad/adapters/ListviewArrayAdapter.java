@@ -1,4 +1,4 @@
-package com.indianservers.writingpad.adapters;
+package com.indianservers.writtingpad.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -6,12 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.indianservers.writingpad.QuestionViewFragment;
-import com.indianservers.writingpad.QuestionsClass;
-import com.indianservers.writingpad.R;
+import com.indianservers.writtingpad.QuestionViewFragment;
+import com.indianservers.writtingpad.QuestionsClass;
+import com.indianservers.writtingpad.R;
 
 import java.util.ArrayList;
 import java.util.List;

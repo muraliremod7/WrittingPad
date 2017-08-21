@@ -1,4 +1,4 @@
-package com.indianservers.writingpad;
+package com.indianservers.writtingpad;
 
 import android.content.Intent;
 import android.os.Bundle;

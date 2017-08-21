@@ -23,16 +23,15 @@
         <ScrollView
             android:id="@+id/scroll"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFFF"
-            android:fillViewport="true">
+            android:layout_height="fill_parent"
+            android:background="#FFFF">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="60dp"
-                android:paddingBottom="80dp"
+                android:paddingBottom="150dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -59,6 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/web"
+                    android:background="@android:color/white"
                     android:visibility="gone"></WebView>
 
                 <ImageView
@@ -81,101 +81,140 @@
 
                 <ImageView
                     android:id="@+id/image_question"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:paddingRight="10dp"
                     android:visibility="gone"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="100dp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
                 <TextView
                     android:id="@+id/opt1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginTop="30dp"
                     android:textSize="20sp"
+                    android:layout_marginTop="20dp"
                     android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/choi1_image"
-                    android:visibility="gone"
                     android:layout_width="50dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_gravity="center_horizontal"
                     android:layout_height="60dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
+                    <TextView
+                        android:id="@+id/opt2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:textSize="20sp"
+                        android:layout_marginTop="20dp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/opt2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/choi2_image"
+                        android:layout_width="50dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="60dp" />
+                </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/choi2_image"
-                    android:layout_width="50dp"
-                    android:visibility="gone"
-                    android:layout_height="60dp" />
-                <TextView
-                    android:id="@+id/opt3"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-                <ImageView
-                    android:id="@+id/choi3_image"
-                    android:layout_width="50dp"
-                    android:visibility="gone"
-                    android:layout_height="60dp" />
-                <TextView
-                    android:id="@+id/opt4"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
+                    <TextView
+                        android:id="@+id/opt3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:textSize="20sp"
+                        android:layout_marginTop="20dp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/choi3_image"
+                        android:layout_width="50dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="60dp" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-                <ImageView
-                    android:id="@+id/choi4_image"
-                    android:layout_width="50dp"
-                    android:visibility="gone"
-                    android:layout_height="60dp" />
-                <TextView
-                    android:id="@+id/opt5"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
+                    <TextView
+                        android:id="@+id/opt4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:textSize="20sp"
+                        android:layout_marginTop="20dp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/choi4_image"
+                        android:layout_width="50dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="60dp" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="30dp"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:paddingBottom="50dp"/>
-                <ImageView
-                    android:id="@+id/choi5_image"
-                    android:layout_width="50dp"
-                    android:visibility="gone"
-                    android:layout_height="60dp" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
+                    <TextView
+                        android:id="@+id/opt5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:textSize="20sp"
+                        android:layout_marginTop="20dp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/choi5_image"
+                        android:layout_width="50dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="60dp" />
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </android.gesture.GestureOverlayView>
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/qfolayout"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true">
+        android:gravity="center_horizontal"
+        android:layout_marginRight="60dp">
+        <ImageButton
+            android:id="@+id/pengesturecancel"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"
+            android:src="@drawable/stop" />
         <ImageButton
             android:id="@+id/pengesture"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
             android:background="@color/colorPrimary"
             android:src="@drawable/pen" />
-        <ImageButton
-            android:id="@+id/textsize"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="5dp"
-            android:layout_marginLeft="20dp"
-            android:scaleType="centerCrop"
-            android:background="@color/colorPrimary"
-            android:src="@drawable/increasetext" />
         <ImageButton
             android:id="@+id/clear"
             android:layout_width="50dp"
@@ -186,11 +225,32 @@
             android:scaleType="centerCrop"
             android:src="@android:drawable/ic_menu_delete" />
         <ImageButton
-            android:id="@+id/pengesturecancel"
+            android:id="@+id/textsize"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:padding="5dp"
             android:layout_marginLeft="20dp"
+            android:scaleType="centerCrop"
             android:background="@color/colorPrimary"
-            android:src="@drawable/stop" />
+            android:src="@drawable/increasetext" />
     </LinearLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true">
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/qright"
+            android:layout_alignParentLeft="true"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/right" />
+        <ImageView
+            android:layout_alignParentLeft="true"
+            android:id="@+id/qleft"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/left"/>
+    </RelativeLayout>
+
 </RelativeLayout>
