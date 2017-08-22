@@ -10,7 +10,19 @@ public class SpinnerModel {
     private  String Image="";
     private  String Url="";
 
+
+    public SpinnerModel(String imageName, String image, String url) {
+        this.imageName = imageName;
+        this.Image = image;
+        this.Url = url;
+    }
+
+    public SpinnerModel() {
+
+    }
+
     /*********** Set Methods ******************/
+
     public void setImageName(String CompanyName)
     {
         this.imageName = CompanyName;
@@ -41,4 +53,6 @@ public class SpinnerModel {
     {
         return this.Url;
     }
+
 }
+

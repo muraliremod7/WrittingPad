@@ -117,8 +117,8 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         line.setOnClickListener(this);
         circle = (ImageView)itemView.findViewById(R.id.circle);
         circle.setOnClickListener(this);
-//        traingle = (ImageView)itemView.findViewById(R.id.traingle);
-//        traingle.setOnClickListener(this);
+        traingle = (ImageView)itemView.findViewById(R.id.traingle);
+        traingle.setOnClickListener(this);
         rect = (ImageView)itemView.findViewById(R.id.rectangle);
         rect.setOnClickListener(this);
         sqaure = (ImageView)itemView.findViewById(R.id.square);
@@ -547,10 +547,10 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
                 mDrawingView.deactivateEraser();
                 mDrawingView.mCurrentShape = DrawingVieww.CIRCLE;
                 break;
-//            case R.id.traingle:
-//                mDrawingView.deactivateEraser();
-//                mDrawingView.mCurrentShape = DrawingVieww.TRIANGLE;
-//                break;
+            case R.id.traingle:
+                mDrawingView.deactivateEraser();
+                mDrawingView.mCurrentShape = DrawingVieww.TRIANGLE;
+                break;
             case R.id.rectangle:
                 mDrawingView.deactivateEraser();
                 mDrawingView.mCurrentShape = DrawingVieww.RECTANGLE;

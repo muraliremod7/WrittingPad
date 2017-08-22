@@ -19,9 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +31,8 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.indianservers.writtingpad.adapters.ListviewArrayAdapter;
 import com.indianservers.writtingpad.adapters.SpinnerAdapter;
+import com.indianservers.writtingpad.adapters.SpinnerFolderAdapter;
+import com.indianservers.writtingpad.model.SpinnerFolderModel;
 import com.indianservers.writtingpad.model.SpinnerModel;
 import com.indianservers.writtingpad.services.AlertDialogManager;
 import com.indianservers.writtingpad.services.ConnectionDetector;
@@ -52,7 +52,7 @@ import it.sephiroth.android.library.widget.AdapterView;
 import static android.view.View.GONE;
 
 public class QuestionViewFragment extends Fragment implements View.OnClickListener {
-    private String Id;
+    public String Id;
     File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "/SreedharCCE/");
     String JsonURL;
     private int mCurrentStroke = 18;
@@ -84,9 +84,10 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
     int start, end;
     SharedPreferences teamID;
     private ArrayList<SpinnerModel> imagesList = new ArrayList<SpinnerModel>();
-    ArrayAdapter<String> arrayAdapter;
+    private ArrayList<SpinnerFolderModel> foldersList = new ArrayList<SpinnerFolderModel>();
     private SpinnerAdapter spinAdapter;
-    public Spinner spinner;
+    private SpinnerFolderAdapter folderAdapter;
+    public Spinner spinner,spinner_folders;
     File sdcard = Environment.getExternalStorageDirectory();
     final Handler handler = new Handler();
     private SharedPreferences.Editor editor;
@@ -168,25 +169,62 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         handler.postDelayed(refresh, 5 * 1000);
         handler.removeCallbacksAndMessages(null);
         spinner = (Spinner) getActivity().findViewById(R.id.spinner_nav);
-        if(spinner==null){
+        spinner_folders = (Spinner) getActivity().findViewById(R.id.spinner_folders);
+        getFolders();
+        if(spinner==null||spinner_folders==null){
 
         }else{
             spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
 
                 @Override
                 public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                    String currentImage = ((TextView) view.findViewById(R.id.sptext)).getText().toString();
-                    spinAdapter.notifyDataSetChanged();
-                    int pos = CurrentQuestionId + 1;
-                    if(currentImage.equals("Select")||currentImage.equals("No Images")){
-                    }else{
-                        String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + currentImage).getAbsolutePath();
-                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
-                        editor = settings.edit();
-                        editor.putString("pathname", pathName);
-                        editor.commit();
-                        callfragment();
+                    try{
+                        String currentImage = ((TextView) view.findViewById(R.id.sptext)).getText().toString();
+                        spinAdapter.notifyDataSetChanged();
+                        int pos = CurrentQuestionId + 1;
+                        if(currentImage.equals("Select")||currentImage.equals("No Images")){
+                        }else{
+                            String pathName = new File(sdcard.getAbsolutePath() + "/SreedharCCE/" + Id + "/" + pos + "/" + currentImage).getAbsolutePath();
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+                            editor = settings.edit();
+                            editor.putString("pathname", pathName);
+                            editor.commit();
+                            callfragment();
+                        }
+                    }catch (NullPointerException e){
+                        e.printStackTrace();
                     }
+
+                }
+
+                @Override
+                public void onNothingSelected(android.widget.AdapterView<?> parent) {
+
+                }
+            });
+            spinner_folders.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                    try{
+                        String currentImage = ((TextView) view.findViewById(R.id.spfoldersName)).getText().toString();
+                        folderAdapter.notifyDataSetChanged();
+                        if(currentImage.equals("Select")||currentImage.equals("No Folders")||currentImage.equals("")){
+                        }else{
+
+                            Toast.makeText(getContext(),currentImage,Toast.LENGTH_LONG).show();
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+                            editor = settings.edit();
+                            editor.putString("input", currentImage);
+                            editor.commit();
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.activity_split_pane_right_pane, new QuestionViewFragment())
+                                    .commit();
+                        }
+                    }catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+
+
                 }
 
                 @Override
@@ -195,8 +233,6 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 }
             });
         }
-
-
         return itemView;
     }
     public void gettingQuestionfromOffline(String jsonURL) {
@@ -254,7 +290,68 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
 
                 });
     }
+    public void getFolders(){
+        foldersList.clear();
+        File yourDir = new File(sdcard, "/SreedharCCE/");
+        if (yourDir.isDirectory()) {
+            if (yourDir == null || yourDir.equals(null)) {
+                SpinnerFolderModel spinnerMode = new SpinnerFolderModel();
+                spinnerMode.setFolderName("");
+                foldersList.add(spinnerMode);
+                folderAdapter = new SpinnerFolderAdapter(getActivity().getApplicationContext(), foldersList);
+                try{
+                    spinner_folders.setAdapter(folderAdapter);
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+            } else {
+                SpinnerFolderModel spinnerMode = new SpinnerFolderModel();
+                spinnerMode.setFolderName("");
+                foldersList.add(spinnerMode);
+                for (File f : yourDir.listFiles()) {
+                    SpinnerFolderModel spinnerModel = new SpinnerFolderModel();
 
+                        String name = f.getName();
+                        spinnerModel.setFolderName(name);
+                        foldersList.add(spinnerModel);
+                        folderAdapter = new SpinnerFolderAdapter(getActivity().getApplicationContext(), foldersList);
+                        try{
+                            spinner_folders.setAdapter(folderAdapter);
+                        }catch (NullPointerException e){
+                            e.printStackTrace();
+                        }
+                }
+                if (foldersList.size() == 0) {
+                    SpinnerFolderModel spinnerModee = new SpinnerFolderModel();
+
+                    foldersList.add(spinnerModee);
+                    folderAdapter = new SpinnerFolderAdapter(getActivity().getApplicationContext(), foldersList);
+                    try{
+                        spinner_folders.setAdapter(folderAdapter);
+                    }catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                } else {
+                    folderAdapter = new SpinnerFolderAdapter(getActivity().getApplicationContext(), foldersList);
+                    folderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    try{
+                        spinner_folders.setAdapter(folderAdapter);
+                    }catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            SpinnerFolderModel spinnerMode = new SpinnerFolderModel();
+            foldersList.add(spinnerMode);
+            folderAdapter = new SpinnerFolderAdapter(getActivity().getApplicationContext(), foldersList);
+            try{
+                spinner_folders.setAdapter(folderAdapter);
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
+        }
+    }
     public void getFileNames(int position, String id) {
         //String Idd = teamID.getString("input","0");
         imagesList.clear();
@@ -421,6 +518,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 opt3.setTextSize(mCurrentStroke);
                 opt4.setTextSize(mCurrentStroke);
                 opt5.setTextSize(mCurrentStroke);
+                questionNumber.setTextSize(mCurrentStroke);
 
             }
         });
@@ -437,7 +535,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             Log.v("sai", "Total Questions-----" + mQuestionsCopy.size());
             direction.setText(Html.fromHtml("\n" + quetionClass.getmQuestionDirection()));
             question.setText(Html.fromHtml(quetionClass.getmQuestion()));
-            questionNumber.setText("Question"+quetionClass.getmQno());
+            questionNumber.setText("Question"+" "+quetionClass.getmQno());
             if (quetionClass.getmQuestionDirection().endsWith(".jpg")) {
                 String mCurrentPhotoPath = file.getAbsolutePath() + "/" + Id + "/" + quetionClass.getmQuestionDirection();
                 bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
@@ -481,9 +579,8 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
             } else {
                 question.setVisibility(View.VISIBLE);
                 questionImage.setVisibility(GONE);
-                question.setText(quetionClass.getmQno() + "  " + Html.fromHtml(quetionClass.getmQuestion()));
+                question.setText(Html.fromHtml(quetionClass.getmQuestion()));
             }
-
             if (quetionClass.getChoice1().endsWith(".jpg")) {
                 String mCurrentPhotoPath = file.getAbsolutePath() + "/" + Id + "/" + quetionClass.getChoice1();
                 bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);

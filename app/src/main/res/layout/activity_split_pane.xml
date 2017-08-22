@@ -74,6 +74,7 @@
             android:layout_margin="15dp"/>
 
         <ImageView
+            android:visibility="gone"
             android:layout_width="200dp"
             android:layout_height="50dp"
             android:src="@drawable/sreedhar_logo"/>
@@ -84,7 +85,13 @@
             android:layout_height="50dp"
             android:background="@drawable/spinner_custom"
             android:spinnerMode="dialog" />
-
+        <Spinner
+            android:id="@+id/spinner_folders"
+            style="@style/mySpinnerStyle"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:background="@drawable/spinner_custom"
+            android:spinnerMode="dialog" />
     </android.support.v7.widget.Toolbar>
 
 

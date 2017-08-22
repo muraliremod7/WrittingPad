@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.annotation.BoolRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -166,30 +167,75 @@ public class DrawingVieww extends View
 			canvas.drawLine(mStartX, mStartY, mx, my, mDrawPaint);
 		}
 	}
-	private void onTouchEventLine(MotionEvent event) {
-		switch (event.getAction()) {
+	private Boolean onTouchEventLine(MotionEvent event) {
+		mStartX = event.getX();
+		mStartY = event.getY();
+
+		switch (event.getAction())
+		{
 			case MotionEvent.ACTION_DOWN:
-                if (isEraserActive) {
-					isDrawing = true;
-                }
-                else {
-                    mCurrentShape = LINE;
-                    isDrawing = true;
-                    mStartX = mx;
-                    mStartY = my;
-                }
+				touch_start(mStartX, mStartY);
 				invalidate();
 				break;
 			case MotionEvent.ACTION_MOVE:
+				touch_move(mStartX, mStartY);
 				invalidate();
 				break;
 			case MotionEvent.ACTION_UP:
-				isDrawing = false;
-				mDrawCanvas.drawLine(mStartX, mStartY, mx, my, mDrawPaint);
+				touch_up();
 				invalidate();
 				break;
 		}
+
+		return true;
 	}
+	private void touch_start(float x, float y)
+	{
+		if (isEraserActive) {
+			mCurrentShape=2;
+			mDrawPaint.setStrokeWidth(20);
+			if(mBackgroundColor== ContextCompat.getColor(getContext(), android.R.color.transparent)){
+				mDrawPaint.setColor(ContextCompat.getColor(getContext(), android.R.color.white));
+			}else{
+				mDrawPaint.setColor(mBackgroundColor);
+			}
+			mDrawPaint.setStrokeWidth(mStrokeWidth*3);
+			isDrawing = true;
+			mStartX = mx;
+			mStartY = my;
+			invalidate();
+		}
+		else {
+			isDrawing = true;
+			mCurrentShape=LINE;
+			mDrawPaint.setColor(mPaintColor);
+			mDrawPath.moveTo(x, y);
+			mx = x;
+			mx = y;
+		}
+        invalidate();
+	}
+	private void touch_move(float x, float y)
+	{
+		float dx = Math.abs(x - mx);
+		float dy = Math.abs(y - my);
+		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE)
+		{
+			mDrawPath.quadTo(mx, my, (x + mx)/2, (y + my)/2);
+			mx = x;
+			my = y;
+		}
+	}
+
+	private void touch_up()
+	{
+		mDrawPath.lineTo(mx, my);
+		mPaths.add(mDrawPath);
+		mPaints.add(mDrawPaint);
+		mDrawPath = new Path();
+		initPaint();
+	}
+
 	//----Smooth Line---//
 	public boolean onTouchEventSmoothLine(MotionEvent event) {
 			mStartX = event.getX();

@@ -21,7 +21,6 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="0dp">
 </com.indianservers.writtingpad.component.DrawingVieww>
-
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -58,12 +57,12 @@
                             android:layout_width="40dp"
                             android:layout_height="match_parent"
                             android:src="@drawable/circle"/>
-                        <!--<ImageView-->
-                            <!--android:id="@+id/traingle"-->
-                            <!--android:layout_marginLeft="30dp"-->
-                            <!--android:layout_width="40dp"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:src="@drawable/triangle"/>-->
+                        <ImageView
+                            android:id="@+id/traingle"
+                            android:layout_marginLeft="30dp"
+                            android:layout_width="40dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/triangle"/>
                         <ImageView
                             android:id="@+id/rectangle"
                             android:layout_marginLeft="30dp"
