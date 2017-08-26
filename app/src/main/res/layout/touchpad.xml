@@ -13,14 +13,58 @@
             android:scaleType="fitStart"
             android:layout_height="match_parent"
             android:id="@+id/img" />
+    <LinearLayout
+        android:id="@+id/screenone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.indianservers.writtingpad.component.DrawingVieww
+            android:id="@+id/first_drawing_view"
+            android:layout_width="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp">
+        </com.indianservers.writtingpad.component.DrawingVieww>
+    </LinearLayout>
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/screentwo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.indianservers.writtingpad.component.DrawingVieww
+            android:id="@+id/second_drawing_view"
+            android:layout_width="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp">
+        </com.indianservers.writtingpad.component.DrawingVieww>
+    </LinearLayout>
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/screentthree"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.indianservers.writtingpad.component.DrawingVieww
+            android:id="@+id/third_drawing_view"
+            android:layout_width="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp">
+        </com.indianservers.writtingpad.component.DrawingVieww>
+    </LinearLayout>
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/screenfour"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.indianservers.writtingpad.component.DrawingVieww
+            android:id="@+id/fourth_drawing_view"
+            android:layout_width="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp">
+        </com.indianservers.writtingpad.component.DrawingVieww>
+    </LinearLayout>
 
-<com.indianservers.writtingpad.component.DrawingVieww
-    android:id="@+id/main_drawing_view"
-    android:layout_width="wrap_content"
-    android:background="@android:color/transparent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="0dp">
-</com.indianservers.writtingpad.component.DrawingVieww>
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -44,34 +88,54 @@
                     android:layout_height="50dp"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
-
+                    <ImageView
+                        android:id="@+id/screen1"
+                        android:layout_marginLeft="30dp"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/screenone"/>
+                    <ImageView
+                        android:id="@+id/screen2"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/screentwo"/>
+                    <ImageView
+                        android:id="@+id/screen3"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/screenthree"/>
+                    <ImageView
+                        android:id="@+id/screen4"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/screenfour"/>
                         <ImageView
                             android:id="@+id/line"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
                             android:layout_width="50dp"
                             android:layout_height="match_parent"
                             android:src="@drawable/line"/>
                         <ImageView
                             android:id="@+id/circle"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
                             android:layout_width="40dp"
                             android:layout_height="match_parent"
                             android:src="@drawable/circle"/>
                         <ImageView
                             android:id="@+id/traingle"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
                             android:layout_width="40dp"
                             android:layout_height="match_parent"
                             android:src="@drawable/triangle"/>
                         <ImageView
                             android:id="@+id/rectangle"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
                             android:layout_width="40dp"
                             android:layout_height="match_parent"
                             android:src="@drawable/rectangle"/>
                         <ImageView
                             android:id="@+id/square"
-                            android:layout_marginLeft="30dp"
+                            android:layout_marginLeft="10dp"
                             android:layout_width="40dp"
                             android:layout_height="match_parent"
                             android:src="@drawable/square"/>

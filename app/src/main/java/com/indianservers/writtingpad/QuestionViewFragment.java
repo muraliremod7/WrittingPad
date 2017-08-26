@@ -99,7 +99,7 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View itemView = inflater.inflate(R.layout.question_touchpad, container, false);
         clear = (ImageButton) itemView.findViewById(R.id.clear);
         textStroke = (ImageButton) itemView.findViewById(R.id.textsize);
@@ -207,18 +207,17 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                     try{
                         String currentImage = ((TextView) view.findViewById(R.id.spfoldersName)).getText().toString();
-                        folderAdapter.notifyDataSetChanged();
                         if(currentImage.equals("Select")||currentImage.equals("No Folders")||currentImage.equals("")){
                         }else{
+                                Toast.makeText(getContext(),currentImage,Toast.LENGTH_LONG).show();
+                                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+                                editor = settings.edit();
+                                editor.putString("input", currentImage);
+                                editor.commit();
+                                getFragmentManager().beginTransaction()
+                                        .replace(R.id.activity_split_pane_right_pane, new QuestionViewFragment())
+                                        .commit();
 
-                            Toast.makeText(getContext(),currentImage,Toast.LENGTH_LONG).show();
-                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
-                            editor = settings.edit();
-                            editor.putString("input", currentImage);
-                            editor.commit();
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.activity_split_pane_right_pane, new QuestionViewFragment())
-                                    .commit();
                         }
                     }catch (NullPointerException e){
                         e.printStackTrace();
@@ -310,8 +309,12 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 foldersList.add(spinnerMode);
                 for (File f : yourDir.listFiles()) {
                     SpinnerFolderModel spinnerModel = new SpinnerFolderModel();
-
                         String name = f.getName();
+                        File folders = new File(sdcard, "/SreedharCCE/"+ name + "/");
+                        File[] contents = folders.listFiles();
+                    if(contents.length==0){
+                        folders.delete();
+                    }else{
                         spinnerModel.setFolderName(name);
                         foldersList.add(spinnerModel);
                         folderAdapter = new SpinnerFolderAdapter(getActivity().getApplicationContext(), foldersList);
@@ -320,6 +323,8 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                         }catch (NullPointerException e){
                             e.printStackTrace();
                         }
+                    }
+
                 }
                 if (foldersList.size() == 0) {
                     SpinnerFolderModel spinnerModee = new SpinnerFolderModel();
@@ -542,8 +547,12 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
                 direction.setVisibility(GONE);
                 webView.setVisibility(GONE);
                 directionImage.setVisibility(View.VISIBLE);
-                directionImage.setImageBitmap(bitmap);
-                directionImage.setLayoutParams(layoutParams);
+                if(bitmap==null){
+
+                }else{
+                    directionImage.setImageBitmap(bitmap);
+                    directionImage.setLayoutParams(layoutParams);
+                }
             } else {
                 directionImage.setVisibility(GONE);
                 direction.setVisibility(View.VISIBLE);

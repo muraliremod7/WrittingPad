@@ -30,6 +30,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.indianservers.writtingpad.component.DrawingVieww;
@@ -93,7 +94,7 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         View itemView = inflater.inflate(R.layout.touchpad, container, false);
-        mDrawingView = (DrawingVieww) itemView.findViewById(R.id.main_drawing_view);
+        mDrawingView = (DrawingVieww) itemView.findViewById(R.id.first_drawing_view);
         progressBar = new ProgressBar(getContext());
         ButterKnife.bind(getActivity());
         dialogManager = new AlertDialogManager();
@@ -133,11 +134,22 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         pensize.setOnClickListener(this);
         save.setOnClickListener(this);
         view = (ImageView)itemView.findViewById(R.id.img);
+
+        ImageView one = (ImageView)itemView.findViewById(R.id.screen1);
+        one.setOnClickListener(this);
+        ImageView two = (ImageView)itemView.findViewById(R.id.screen2);
+        two.setOnClickListener(this);
+        ImageView three = (ImageView)itemView.findViewById(R.id.screen3);
+        three.setOnClickListener(this);
+        ImageView four = (ImageView)itemView.findViewById(R.id.screen4);
+        four.setOnClickListener(this);
+
         String value = teamID.getString("pathname", "1");
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = settings.edit();
         editor.putString("previousImage", value);
         editor.commit();
+        mDrawingView.mCurrentShape = DrawingVieww.SMOOTHLINE;
         try{
             Bitmap bmp = BitmapFactory.decodeFile(value);
             if(bmp==null){
@@ -444,7 +456,7 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
                 BitmapDrawable drawabl = (BitmapDrawable) view.getDrawable();
                 Bitmap bitmap = drawabl.getBitmap();
                 mDrawingView.setDrawingCacheEnabled(true);
-             //   mDrawingView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+                //   mDrawingView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
                 Bitmap bmm = mDrawingView.getDrawingCache();
                 Bitmap mBackground = Bitmap.createBitmap(bmm.getWidth(), bmm.getHeight(), Bitmap.Config.ARGB_8888);
                 //Toast.makeText(getActivity(), "width---"+bmm.getWidth(), Toast.LENGTH_SHORT).show();
@@ -480,7 +492,6 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         return f;
 
     }
-
     public void callfragment() {
         QuestionViewFragment fragment2 = new QuestionViewFragment();
         FragmentManager fragmentManager = getFragmentManager();
@@ -492,7 +503,6 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-
         switch (v.getId()) {
             case  R.id.pencil:
                 mDrawingView.deactivateEraser();
@@ -509,10 +519,59 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
                 view.setImageResource(0);
                 break;
             case R.id.undo1:
+                //mDrawingView.mCurrentShape = DrawingVieww.SELECT;
                 mDrawingView.undo();
                 break;
             case R.id.redo1:
                 mDrawingView.redo();
+                break;
+            case R.id.screen1:
+                mDrawingView.mCurrentShape = DrawingVieww.SMOOTHLINE;
+                View screenOne = getActivity().findViewById(R.id.screenone);
+                screenOne.setVisibility(View.VISIBLE);
+                mDrawingView = (DrawingVieww) getActivity().findViewById(R.id.first_drawing_view);
+                View screenTwo = getActivity().findViewById(R.id.screentwo);
+                screenTwo.setVisibility(View.GONE);
+                View screenThree = getActivity().findViewById(R.id.screentthree);
+                screenThree.setVisibility(View.GONE);
+                View screenFour = getActivity().findViewById(R.id.screenfour);
+                screenFour.setVisibility(View.GONE);
+                break;
+            case R.id.screen2:
+                mDrawingView.mCurrentShape = DrawingVieww.SMOOTHLINE;
+                mDrawingView = (DrawingVieww) getActivity().findViewById(R.id.second_drawing_view);
+                View screenTwo1 = getActivity().findViewById(R.id.screentwo);
+                screenTwo1.setVisibility(View.VISIBLE);
+                View screenThree1 = getActivity().findViewById(R.id.screentthree);
+                screenThree1.setVisibility(View.GONE);
+                View screenFour1 = getActivity().findViewById(R.id.screenfour);
+                screenFour1.setVisibility(View.GONE);
+                View screenOne1 = getActivity().findViewById(R.id.screenone);
+                screenOne1.setVisibility(View.GONE);
+                break;
+            case R.id.screen3:
+                mDrawingView.mCurrentShape = DrawingVieww.SMOOTHLINE;
+                mDrawingView = (DrawingVieww) getActivity().findViewById(R.id.third_drawing_view);
+                View screenTwo2 = getActivity().findViewById(R.id.screentwo);
+                screenTwo2.setVisibility(View.GONE);
+                View screenThree2 = getActivity().findViewById(R.id.screentthree);
+                screenThree2.setVisibility(View.VISIBLE);
+                View screenFour2 = getActivity().findViewById(R.id.screenfour);
+                screenFour2.setVisibility(View.GONE);
+                View screenOne2 = getActivity().findViewById(R.id.screenone);
+                screenOne2.setVisibility(View.GONE);
+                break;
+            case R.id.screen4:
+                mDrawingView.mCurrentShape = DrawingVieww.SMOOTHLINE;
+                mDrawingView = (DrawingVieww) getActivity().findViewById(R.id.fourth_drawing_view);
+                View screenTwo3 = getActivity().findViewById(R.id.screentwo);
+                screenTwo3.setVisibility(View.GONE);
+                View screenThree3 = getActivity().findViewById(R.id.screentthree);
+                screenThree3.setVisibility(View.GONE);
+                View screenFour3 = getActivity().findViewById(R.id.screenfour);
+                screenFour3.setVisibility(View.VISIBLE);
+                View screenOne3 = getActivity().findViewById(R.id.screenone);
+                screenOne3.setVisibility(View.GONE);
                 break;
             case R.id.background1:
                 startFillBackgroundDialog();

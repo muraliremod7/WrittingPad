@@ -7,30 +7,29 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.BoolRes;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
+
 import java.util.ArrayList;
 
 public class DrawingVieww extends View
 {
+	public static final int SELECT = 0;
 	public static final int LINE = 1;
+	public static final int SMOOTHLINE = 2;
 	public static final int RECTANGLE = 3;
 	public static final int SQUARE = 4;
 	public static final int CIRCLE = 5;
 	public static final int TRIANGLE = 6;
-	public static final int SMOOTHLINE = 2;
 	public int mCurrentShape;
 	protected float mStartX,mStartY;
 	protected float mx, my;
 	protected boolean isDrawing = false;
-	public static Paint mPaintErase = new Paint();
-	public static Paint mPaintBitmap;
 	private Path mDrawPath;
 	private Paint mBackgroundPaint;
 	private Paint mDrawPaint;
@@ -47,8 +46,8 @@ public class DrawingVieww extends View
 	private int mPaintColor = ContextCompat.getColor(getContext(), android.R.color.black);
 	private int mStrokeWidth = 5;
 	private boolean isEraserActive = false;
-
 	private static final float TOUCH_TOLERANCE = 4;
+	ImageView imageView;
 	public DrawingVieww(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
@@ -107,6 +106,7 @@ public class DrawingVieww extends View
 		}
 		return true;
 	}
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -117,6 +117,7 @@ public class DrawingVieww extends View
 		}
 		canvas.drawPath(mDrawPath,mDrawPaint);
 		canvas.drawBitmap(mCanvasBitmap, 0, 0, mDrawPaint);
+
 		if (isDrawing){
 			switch (mCurrentShape) {
 				case LINE:
@@ -135,18 +136,14 @@ public class DrawingVieww extends View
 					onDrawTriangle(canvas);
 					break;
 			}
-
 		}
 	}
-	public void drawBackground(Canvas canvas)
-	{
+	public void drawBackground(Canvas canvas) {
 		mBackgroundPaint.setColor(mBackgroundColor);
 		mBackgroundPaint.setStyle(Paint.Style.FILL);
 		canvas.drawRect(0, 0, this.getWidth(), this.getHeight(), mBackgroundPaint);
 	}
-
-	private void drawPaths(Canvas canvas)
-	{
+	private void drawPaths(Canvas canvas) {
 		int i = 0;
 		for (Path p : mPaths)
 		{
@@ -167,6 +164,7 @@ public class DrawingVieww extends View
 			canvas.drawLine(mStartX, mStartY, mx, my, mDrawPaint);
 		}
 	}
+	@NonNull
 	private Boolean onTouchEventLine(MotionEvent event) {
 		mStartX = event.getX();
 		mStartY = event.getY();
@@ -189,8 +187,7 @@ public class DrawingVieww extends View
 
 		return true;
 	}
-	private void touch_start(float x, float y)
-	{
+	private void touch_start(float x, float y) {
 		if (isEraserActive) {
 			mCurrentShape=2;
 			mDrawPaint.setStrokeWidth(20);
@@ -215,8 +212,7 @@ public class DrawingVieww extends View
 		}
         invalidate();
 	}
-	private void touch_move(float x, float y)
-	{
+	private void touch_move(float x, float y) {
 		float dx = Math.abs(x - mx);
 		float dy = Math.abs(y - my);
 		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE)
@@ -226,9 +222,7 @@ public class DrawingVieww extends View
 			my = y;
 		}
 	}
-
-	private void touch_up()
-	{
+	private void touch_up() {
 		mDrawPath.lineTo(mx, my);
 		mPaths.add(mDrawPath);
 		mPaints.add(mDrawPaint);
@@ -539,12 +533,9 @@ public class DrawingVieww extends View
 		mPaints.clear();
 		mUndonePaths.clear();
 		mUndonePaints.clear();
-		setPaintColor(Color.BLACK);
 		mDrawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
 		invalidate();
 	}
-
 	public void setPaintColor(int color)
 	{
 		mPaintColor = color;
