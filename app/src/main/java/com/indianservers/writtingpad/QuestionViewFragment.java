@@ -170,7 +170,15 @@ public class QuestionViewFragment extends Fragment implements View.OnClickListen
         handler.removeCallbacksAndMessages(null);
         spinner = (Spinner) getActivity().findViewById(R.id.spinner_nav);
         spinner_folders = (Spinner) getActivity().findViewById(R.id.spinner_folders);
-        getFolders();
+        try{
+            getFolders();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        catch (RuntimeException e){
+            e.printStackTrace();
+        }
+
         if(spinner==null||spinner_folders==null){
 
         }else{

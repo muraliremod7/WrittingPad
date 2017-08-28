@@ -519,8 +519,8 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
                 view.setImageResource(0);
                 break;
             case R.id.undo1:
-                //mDrawingView.mCurrentShape = DrawingVieww.SELECT;
-                mDrawingView.undo();
+                mDrawingView.mCurrentShape = DrawingVieww.SELECT;
+                //mDrawingView.undo();
                 break;
             case R.id.redo1:
                 mDrawingView.redo();

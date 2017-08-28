@@ -4,16 +4,24 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.indianservers.writtingpad.R;
 
 import java.util.ArrayList;
 
@@ -47,7 +55,7 @@ public class DrawingVieww extends View
 	private int mStrokeWidth = 5;
 	private boolean isEraserActive = false;
 	private static final float TOUCH_TOLERANCE = 4;
-	ImageView imageView;
+	private float scaleFactor = 1.f;
 	public DrawingVieww(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
@@ -106,7 +114,14 @@ public class DrawingVieww extends View
 		}
 		return true;
 	}
-
+	@Override
+	public void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		width = w;
+		height = h;
+		mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mDrawCanvas = new Canvas(mCanvasBitmap);
+	}
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -117,7 +132,6 @@ public class DrawingVieww extends View
 		}
 		canvas.drawPath(mDrawPath,mDrawPaint);
 		canvas.drawBitmap(mCanvasBitmap, 0, 0, mDrawPaint);
-
 		if (isDrawing){
 			switch (mCurrentShape) {
 				case LINE:
@@ -518,15 +532,6 @@ public class DrawingVieww extends View
 		my = mStartY - y < 0 ? mStartY + max : mStartY - max;
 	}
 
-
-	@Override
-	public void onSizeChanged(int w, int h, int oldw, int oldh) {
-		super.onSizeChanged(w, h, oldw, oldh);
-		width = w;
-		height = h;
-		mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-		mDrawCanvas = new Canvas(mCanvasBitmap);
-	}
 	public void clearCanvas()
 	{
 		mPaths.clear();
@@ -599,4 +604,5 @@ public class DrawingVieww extends View
 	{
 		return isEraserActive;
 	}
+
 }
