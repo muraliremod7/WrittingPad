@@ -30,7 +30,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.indianservers.writtingpad.component.DrawingVieww;
@@ -60,7 +59,7 @@ import android.os.Handler;
 import butterknife.ButterKnife;
 
 public class ExplanationTouchPad extends Fragment implements View.OnClickListener {
-    ImageView up,down,line,circle,traingle,rect,sqaure;
+    ImageView up,down,line,circle,traingle,rect,sqaure, select;
     DrawingVieww mDrawingView;
     private ProgressDialog pDialog;
     private int mCurrentBackgroundColor;
@@ -76,8 +75,7 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
     private AlertDialogManager dialogManager;
     SharedPreferences teamID;
     File sdcard = Environment.getExternalStorageDirectory();
-    private float downx = 0f;
-    private float downy = 0f;
+
     ImageView view;
     public static ExplanationTouchPad newInstance() {
         ExplanationTouchPad fragment = new ExplanationTouchPad();
@@ -124,6 +122,8 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
         rect.setOnClickListener(this);
         sqaure = (ImageView)itemView.findViewById(R.id.square);
         sqaure.setOnClickListener(this);
+        select = (ImageView)itemView.findViewById(R.id.select);
+        select.setOnClickListener(this);
         pen.setOnClickListener(this);
         eraser.setOnClickListener(this);
         delete.setOnClickListener(this);
@@ -218,8 +218,8 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
     }
 
     private void initDrawingView() {
-        mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.white);
-        mCurrentColor = ContextCompat.getColor(getContext(), android.R.color.black);
+        mCurrentBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.black);
+        mCurrentColor = ContextCompat.getColor(getContext(), android.R.color.white);
         mCurrentStroke = 5;
         mDrawingView.setBackgroundColor(mCurrentBackgroundColor);
         mDrawingView.setPaintColor(mCurrentColor);
@@ -519,8 +519,7 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
                 view.setImageResource(0);
                 break;
             case R.id.undo1:
-                mDrawingView.mCurrentShape = DrawingVieww.SELECT;
-                //mDrawingView.undo();
+                mDrawingView.undo();
                 break;
             case R.id.redo1:
                 mDrawingView.redo();
@@ -617,6 +616,10 @@ public class ExplanationTouchPad extends Fragment implements View.OnClickListene
             case R.id.square:
                 mDrawingView.deactivateEraser();
                 mDrawingView.mCurrentShape = DrawingVieww.SQUARE;
+                break;
+            case R.id.select:
+                mDrawingView.deactivateEraser();
+                mDrawingView.mCurrentShape = DrawingVieww.SELECT;
                 break;
 
 

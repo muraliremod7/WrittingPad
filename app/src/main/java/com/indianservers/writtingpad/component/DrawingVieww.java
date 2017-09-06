@@ -2,6 +2,7 @@ package com.indianservers.writtingpad.component;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -9,13 +10,16 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -24,8 +28,13 @@ import android.widget.ImageView;
 import com.indianservers.writtingpad.R;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
-public class DrawingVieww extends View
+import static android.content.ContentValues.TAG;
+
+public class DrawingVieww extends View implements View.OnTouchListener
 {
 	public static final int SELECT = 0;
 	public static final int LINE = 1;
@@ -44,18 +53,24 @@ public class DrawingVieww extends View
 	public  Canvas mDrawCanvas;
 	private Bitmap mCanvasBitmap;
 	private int width, height;
+	int mWidth, mHeight;
 	private ArrayList<Path> mPaths = new ArrayList<>();
 	private ArrayList<Paint> mPaints = new ArrayList<>();
-	private ArrayList<Path> mUndonePaths = new ArrayList<>();
-	private ArrayList<Paint> mUndonePaints = new ArrayList<>();
+	public ArrayList<Path> mUndonePaths = new ArrayList<>();
+	public ArrayList<Paint> mUndonePaints = new ArrayList<>();
 	private ArrayList<Pair<Path, Paint>> paths = new ArrayList<Pair<Path, Paint>>();
 	// Set default values
-	private int mBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.white);
-	private int mPaintColor = ContextCompat.getColor(getContext(), android.R.color.black);
+	private int mBackgroundColor = ContextCompat.getColor(getContext(), android.R.color.black);
+	private int mPaintColor = ContextCompat.getColor(getContext(), android.R.color.white);
 	private int mStrokeWidth = 5;
 	private boolean isEraserActive = false;
 	private static final float TOUCH_TOLERANCE = 4;
-	private float scaleFactor = 1.f;
+	private Rect mMeasuredRect;
+
+	/** All available circles */
+	private ArrayList<CircleArea> mCircles = new ArrayList<DrawingVieww.CircleArea>();
+	ArrayList<DrawingVieww.CircleArea> circle = new ArrayList<>();
+	private SparseArray<DrawingVieww.CircleArea> mCirclePointer = new SparseArray<DrawingVieww.CircleArea>();
 	public DrawingVieww(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
@@ -93,6 +108,9 @@ public class DrawingVieww extends View
 				break;
 		}
 		switch (mCurrentShape) {
+			case SELECT:
+				onTouchEventCirclee(event);
+				break;
 			case LINE:
 				onTouchEventLine(event);
 				break;
@@ -125,15 +143,24 @@ public class DrawingVieww extends View
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		canvas.drawBitmap(mCanvasBitmap, 0, 0, mDrawPaint);
 		drawBackground(canvas);
 		drawPaths(canvas);
 		for (Pair<Path, Paint> p : paths) {
 			canvas.drawPath(p.first, p.second);
 		}
+		canvas.drawBitmap(mCanvasBitmap, null, mMeasuredRect, null);
+
+		for (DrawingVieww.CircleArea circle : mCircles) {
+			canvas.drawCircle(circle.centerX, circle.centerY, circle.radius, mDrawPaint);
+		}
 		canvas.drawPath(mDrawPath,mDrawPaint);
-		canvas.drawBitmap(mCanvasBitmap, 0, 0, mDrawPaint);
+
 		if (isDrawing){
 			switch (mCurrentShape) {
+				case SELECT:
+					onDrawCircle(canvas);
+					break;
 				case LINE:
 					onDrawLine(canvas);
 					break;
@@ -166,6 +193,121 @@ public class DrawingVieww extends View
 		}
 	}
 
+	public boolean onTouchEventCirclee(final MotionEvent event) {
+		boolean handled = false;
+
+		CircleArea touchedCircle;
+		int xTouch;
+		int yTouch;
+		int pointerId;
+		int actionIndex = event.getActionIndex();
+
+		// get touch event coordinates and make transparent circle from it
+		switch (event.getActionMasked()) {
+			case MotionEvent.ACTION_DOWN:
+
+					xTouch = (int) event.getX(0);
+					yTouch = (int) event.getY(0);
+					// check if we've touched inside some circle
+					touchedCircle = obtainTouchedCircle(xTouch, yTouch);
+					mCirclePointer.put(event.getPointerId(0), touchedCircle);
+					invalidate();
+					handled = true;
+				break;
+
+			case MotionEvent.ACTION_POINTER_DOWN:
+				Log.w(TAG, "Pointer down");
+				// It secondary pointers, so obtain their ids and check circles
+				pointerId = event.getPointerId(actionIndex);
+
+				xTouch = (int) event.getX(actionIndex);
+				yTouch = (int) event.getY(actionIndex);
+
+				// check if we've touched inside some circle
+				touchedCircle = obtainTouchedCircle(xTouch, yTouch);
+
+				mCirclePointer.put(pointerId, touchedCircle);
+				touchedCircle.centerX = xTouch;
+				touchedCircle.centerY = yTouch;
+				invalidate();
+				handled = true;
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+				final int pointerCount = event.getPointerCount();
+
+				Log.w(TAG, "Move");
+
+				for (actionIndex = 0; actionIndex < pointerCount; actionIndex++) {
+					// Some pointer has moved, search it by pointer id
+					pointerId = event.getPointerId(actionIndex);
+
+					xTouch = (int) event.getX(actionIndex);
+					yTouch = (int) event.getY(actionIndex);
+
+					touchedCircle = mCirclePointer.get(pointerId);
+
+					if (null != touchedCircle) {
+						touchedCircle.centerX = xTouch;
+						touchedCircle.centerY = yTouch;
+					}
+				}
+				invalidate();
+				handled = true;
+				break;
+
+			case MotionEvent.ACTION_UP:
+				invalidate();
+				handled = true;
+				break;
+
+			case MotionEvent.ACTION_POINTER_UP:
+				// not general pointer was up
+				pointerId = event.getPointerId(actionIndex);
+
+				mCirclePointer.remove(pointerId);
+				invalidate();
+				handled = true;
+				break;
+
+			case MotionEvent.ACTION_CANCEL:
+				handled = true;
+				break;
+
+			default:
+				// do nothing
+				break;
+		}
+
+		return super.onTouchEvent(event) || handled;
+	}
+
+	private DrawingVieww.CircleArea obtainTouchedCircle(final float xTouch, final float yTouch) {
+		DrawingVieww.CircleArea touchedCircle = getTouchedCircle(xTouch, yTouch);
+
+		if (null == touchedCircle) {
+		}
+
+		return touchedCircle;
+	}
+	private DrawingVieww.CircleArea getTouchedCircle(final float xTouch, final float yTouch) {
+		DrawingVieww.CircleArea touched = null;
+
+		for (DrawingVieww.CircleArea circle : mCircles) {
+			if ((circle.centerX - xTouch) * (circle.centerX - xTouch) + (circle.centerY - yTouch) * (circle.centerY - yTouch) <= circle.radius * circle.radius) {
+				touched = circle;
+				break;
+			}
+		}
+
+		return touched;
+	}
+	@Override
+	protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+		mMeasuredRect = new Rect(0, 0, getMeasuredWidth(), getMeasuredHeight());
+	}
 	//------------------------------------------------------------------
 	// Line
 	//------------------------------------------------------------------
@@ -454,7 +596,13 @@ public class DrawingVieww extends View
                 break;
             case MotionEvent.ACTION_UP:
                 isDrawing = false;
-				mDrawPath.addCircle(mStartX, mStartY, calculateRadius(mStartX,mStartY,mx,my), Path.Direction.CCW);
+				//mDrawPath.addCircle(mStartX, mStartY, calculateRadius(mStartX,mStartY,mx,my), Path.Direction.CCW);
+				DrawingVieww.CircleArea touchedCircle = getTouchedCircle(mStartX, mStartY);
+				if (null == touchedCircle) {
+					touchedCircle = new DrawingVieww.CircleArea(mStartX, mStartX, (int) calculateRadius(mStartX, mStartY, mx, my));
+					Log.w(TAG, "Added circle " + touchedCircle);
+					mCircles.add(touchedCircle);
+				}
 				mPaths.add(mDrawPath);
 				mPaints.add(mDrawPaint);
 				mDrawPath = new Path();
@@ -539,6 +687,7 @@ public class DrawingVieww extends View
 		mUndonePaths.clear();
 		mUndonePaints.clear();
 		mDrawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		mCircles.clear();
 		invalidate();
 	}
 	public void setPaintColor(int color)
@@ -579,6 +728,11 @@ public class DrawingVieww extends View
 			mUndonePaints.add(mPaints.remove(mPaints.size() - 1));
 			invalidate();
 		}
+		if(mCircles.size()>0){
+
+			circle.add(mCircles.remove(mCircles.size() - 1));
+			invalidate();
+		}
 	}
 
 	public void redo()
@@ -587,6 +741,10 @@ public class DrawingVieww extends View
 		{
 			mPaths.add(mUndonePaths.remove(mUndonePaths.size() - 1));
 			mPaints.add(mUndonePaints.remove(mUndonePaints.size() - 1));
+			invalidate();
+		}
+		if(circle.size()>0){
+			mCircles.add(circle.remove(circle.size() - 1));
 			invalidate();
 		}
 	}
@@ -604,5 +762,25 @@ public class DrawingVieww extends View
 	{
 		return isEraserActive;
 	}
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		return false;
+	}
+	/** Stores data about single circle */
+	private static class CircleArea {
+		int radius;
+		int centerX;
+		int centerY;
 
+		CircleArea(float centerX, float centerY, int radius) {
+			this.radius = radius;
+			this.centerX = (int) centerX;
+			this.centerY = (int) centerY;
+		}
+
+		@Override
+		public String toString() {
+			return "Circle[" + centerX + ", " + centerY + ", " + radius + "]";
+		}
+	}
 }

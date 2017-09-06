@@ -45,15 +45,15 @@
                     android:textStyle="bold"
                     android:textSize="25sp"/>
                 <TextView
-                android:id="@+id/question_direction"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="15dp"
-                android:padding="5dp"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                    android:id="@+id/question_direction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="15dp"
+                    android:padding="5dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
                 <WebView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
